@@ -5,7 +5,9 @@ defmodule ExVote.Projects do
   alias ExVote.Projects.{Project, ProjectServer}
 
   def list_projects do
-    Repo.all(Project)
+    Project
+    |> Repo.all()
+    |> Repo.preload(:tickets)
   end
 
   def get_project(project_id) do
