@@ -10,7 +10,7 @@ defmodule ExVote.Projects.Project do
   end
 
   @doc false
-  def changeset(project, attrs) do
+  def changeset_create(project, attrs) do
     project
     |> cast(attrs, [:title])
     |> validate_required([:title])
