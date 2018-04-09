@@ -33,6 +33,10 @@ defmodule ExVote.Projects do
     end
   end
 
+  def delete_project(project_id) do
+    Repo.delete(%Project{id: project_id})
+  end
+
   def start_project_server(%Project{} = project) do
     Logger.debug("Starting project server for id #{project.id}")
     DynamicSupervisor.start_child(ExVote.Projects.Supervisor, {ProjectServer, project})

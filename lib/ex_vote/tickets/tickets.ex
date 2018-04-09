@@ -1,104 +1,104 @@
 defmodule ExVote.Tickets do
-  @moduledoc """
-  The Tickets context.
-  """
+  # @moduledoc """
+  # The Tickets context.
+  # """
 
-  import Ecto.Query, warn: false
-  alias ExVote.Repo
+  # import Ecto.Query, warn: false
+  # alias ExVote.Repo
 
-  alias ExVote.Tickets.Ticket
+  # alias ExVote.Tickets.Ticket
 
-  @doc """
-  Returns the list of tickets.
+  # @doc """
+  # Returns the list of tickets.
 
-  ## Examples
+  # ## Examples
 
-      iex> list_tickets()
-      [%Ticket{}, ...]
+  #     iex> list_tickets()
+  #     [%Ticket{}, ...]
 
-  """
-  def list_tickets do
-    Repo.all(Ticket)
-  end
+  # """
+  # def list_tickets do
+  #   Repo.all(Ticket)
+  # end
 
-  @doc """
-  Gets a single ticket.
+  # @doc """
+  # Gets a single ticket.
 
-  Raises `Ecto.NoResultsError` if the Ticket does not exist.
+  # Raises `Ecto.NoResultsError` if the Ticket does not exist.
 
-  ## Examples
+  # ## Examples
 
-      iex> get_ticket!(123)
-      %Ticket{}
+  #     iex> get_ticket!(123)
+  #     %Ticket{}
 
-      iex> get_ticket!(456)
-      ** (Ecto.NoResultsError)
+  #     iex> get_ticket!(456)
+  #     ** (Ecto.NoResultsError)
 
-  """
-  def get_ticket!(id), do: Repo.get!(Ticket, id)
+  # """
+  # def get_ticket!(id), do: Repo.get!(Ticket, id)
 
-  @doc """
-  Creates a ticket.
+  # @doc """
+  # Creates a ticket.
 
-  ## Examples
+  # ## Examples
 
-      iex> create_ticket(%{field: value})
-      {:ok, %Ticket{}}
+  #     iex> create_ticket(%{field: value})
+  #     {:ok, %Ticket{}}
 
-      iex> create_ticket(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+  #     iex> create_ticket(%{field: bad_value})
+  #     {:error, %Ecto.Changeset{}}
 
-  """
-  def create_ticket(attrs \\ %{}) do
-    %Ticket{}
-    |> Ticket.changeset(attrs)
-    |> Repo.insert()
-  end
+  # """
+  # def create_ticket(attrs \\ %{}) do
+  #   %Ticket{}
+  #   |> Ticket.changeset(attrs)
+  #   |> Repo.insert()
+  # end
 
-  @doc """
-  Updates a ticket.
+  # @doc """
+  # Updates a ticket.
 
-  ## Examples
+  # ## Examples
 
-      iex> update_ticket(ticket, %{field: new_value})
-      {:ok, %Ticket{}}
+  #     iex> update_ticket(ticket, %{field: new_value})
+  #     {:ok, %Ticket{}}
 
-      iex> update_ticket(ticket, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+  #     iex> update_ticket(ticket, %{field: bad_value})
+  #     {:error, %Ecto.Changeset{}}
 
-  """
-  def update_ticket(%Ticket{} = ticket, attrs) do
-    ticket
-    |> Ticket.changeset(attrs)
-    |> Repo.update()
-  end
+  # """
+  # def update_ticket(%Ticket{} = ticket, attrs) do
+  #   ticket
+  #   |> Ticket.changeset(attrs)
+  #   |> Repo.update()
+  # end
 
-  @doc """
-  Deletes a Ticket.
+  # @doc """
+  # Deletes a Ticket.
 
-  ## Examples
+  # ## Examples
 
-      iex> delete_ticket(ticket)
-      {:ok, %Ticket{}}
+  #     iex> delete_ticket(ticket)
+  #     {:ok, %Ticket{}}
 
-      iex> delete_ticket(ticket)
-      {:error, %Ecto.Changeset{}}
+  #     iex> delete_ticket(ticket)
+  #     {:error, %Ecto.Changeset{}}
 
-  """
-  def delete_ticket(%Ticket{} = ticket) do
-    Repo.delete(ticket)
-  end
+  # """
+  # def delete_ticket(%Ticket{} = ticket) do
+  #   Repo.delete(ticket)
+  # end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking ticket changes.
+  # @doc """
+  # Returns an `%Ecto.Changeset{}` for tracking ticket changes.
 
-  ## Examples
+  # ## Examples
 
-      iex> change_ticket(ticket)
-      %Ecto.Changeset{source: %Ticket{}}
+  #     iex> change_ticket(ticket)
+  #     %Ecto.Changeset{source: %Ticket{}}
 
-  """
-  def change_ticket(%Ticket{} = ticket) do
-    Ticket.changeset(ticket, %{})
-  end
+  # """
+  # def change_ticket(%Ticket{} = ticket) do
+  #   Ticket.changeset(ticket, %{})
+  # end
 end
