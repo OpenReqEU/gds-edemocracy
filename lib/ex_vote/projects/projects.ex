@@ -34,12 +34,10 @@ defmodule ExVote.Projects do
   end
 
   def delete_project(project_id) do
-    case Repo.delete(%Project{id: project_id}) do
-      {:ok, _} = success ->
-        ProjectServer.delete(project_id)
-        success
-      error -> error
-    end
+    deleted = Repo.delete(%Project{id: project_id})
+    ProjectServer.delete(project_id)
+
+    deleted
   end
 
   def start_project_server(%Project{} = project) do
