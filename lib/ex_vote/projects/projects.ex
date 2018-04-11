@@ -29,7 +29,7 @@ defmodule ExVote.Projects do
          {:ok, _} <- start_project_server(project) do
       {:ok, project}
     else
-      {:error, _} = error -> error
+      error -> error
     end
   end
 
