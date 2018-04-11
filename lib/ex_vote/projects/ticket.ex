@@ -1,4 +1,4 @@
-defmodule ExVote.Tickets.Ticket do
+defmodule ExVote.Projects.Ticket do
   use Ecto.Schema
   import Ecto.Changeset
 

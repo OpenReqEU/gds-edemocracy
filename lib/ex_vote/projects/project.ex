@@ -4,7 +4,7 @@ defmodule ExVote.Projects.Project do
 
   schema "projects" do
     field :title, :string
-    has_many :tickets, ExVote.Tickets.Ticket
+    has_many :tickets, ExVote.Projects.Ticket
 
     timestamps()
   end
@@ -14,6 +14,6 @@ defmodule ExVote.Projects.Project do
     project
     |> cast(attrs, [:title])
     |> validate_required([:title])
-    |> cast_assoc(:tickets, with: &ExVote.Tickets.Ticket.changeset_create/2)
+    |> cast_assoc(:tickets, with: &ExVote.Projects.Ticket.changeset_create/2)
   end
 end
