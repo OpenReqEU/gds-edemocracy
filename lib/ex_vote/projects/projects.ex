@@ -34,7 +34,12 @@ defmodule ExVote.Projects do
   end
 
   def delete_project(project_id) do
-    Repo.delete(%Project{id: project_id})
+    case Repo.delete(%Project{id: project_id}) do
+      {:ok, _} = success ->
+        ProjectServer.delete(project_id)
+        success
+      error -> error
+    end
   end
 
   def start_project_server(%Project{} = project) do
@@ -42,11 +47,8 @@ defmodule ExVote.Projects do
     DynamicSupervisor.start_child(ExVote.Projects.Supervisor, {ProjectServer, project})
   end
 
-  defp project_server_alive?(project_id) do
-    case Registry.lookup(ExVote.Projects.Registry, project_id) do
-      [{_, _}] -> true
-      _ -> false
-    end
+  def project_server_alive?(project_id) do
+    match?([{_, _}], Registry.lookup(ExVote.Projects.Registry, project_id))
   end
 
 

@@ -17,6 +17,10 @@ defmodule ExVote.Projects.ProjectServer do
      GenServer.call(via_tuple(project_id), :get)
    end
 
+   def delete(project_id) do
+     GenServer.cast(via_tuple(project_id), :delete)
+   end
+
   # def set(%Project{} = project, %Project{} = new_project) do
   #   GenServer.call(via_tuple(project), {:set, new_project})
   # end
@@ -44,6 +48,10 @@ defmodule ExVote.Projects.ProjectServer do
 
   def handle_call(:get, _, state) do
     {:reply, state, state}
+  end
+
+  def handle_cast(:delete, state) do
+    {:stop, :normal, state}
   end
 
   # def handle_call({:set, project}, _, _) do
