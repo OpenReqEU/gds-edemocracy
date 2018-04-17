@@ -1,13 +1,20 @@
 defmodule ExVote.Projects do
-  require Logger
+  import Ecto.Query
+  import Logger
 
   alias ExVote.Repo
   alias ExVote.Projects.{Project, ProjectServer}
 
   def list_projects do
-    Project
+    # Fetch all projects with associated tickets
+    query = from p in Project,
+      left_join: t in assoc(p, :tickets),
+      preload: [tickets: t],
+      order_by: [desc: p.inserted_at]
+
+    query
     |> Repo.all()
-    |> Repo.preload(:tickets)
+    |> Enum.map(&Project.compute_phase/1)
   end
 
   def get_project(project_id) do
@@ -25,9 +32,10 @@ defmodule ExVote.Projects do
       |> Project.changeset_create(attrs)
       |> Repo.insert()
 
-    with {:ok, project} <- project,
-         {:ok, _} <- start_project_server(project) do
-      {:ok, project}
+    with {:ok, %{:id => id} = project} <- project,
+         project_with_phase <- Project.compute_phase(project),
+         {:ok, _} <- start_project_server(project_with_phase) do
+      {:ok, project_with_phase}
     else
       error -> error
     end
