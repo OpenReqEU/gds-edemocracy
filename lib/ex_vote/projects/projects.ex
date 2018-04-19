@@ -3,7 +3,7 @@ defmodule ExVote.Projects do
   import Logger
 
   alias ExVote.Repo
-  alias ExVote.Projects.{Project, ProjectServer, Participation, Ticket}
+  alias ExVote.Projects.{Project, ProjectServer, Ticket}
 
   def list_projects do
     # Fetch all projects with associated tickets and participations
