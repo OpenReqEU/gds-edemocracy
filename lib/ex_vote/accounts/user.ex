@@ -5,6 +5,7 @@ defmodule ExVote.Accounts.User do
 
   schema "users" do
     field :name, :string
+    has_many :participations, ExVote.Projects.Participation
 
     timestamps()
   end

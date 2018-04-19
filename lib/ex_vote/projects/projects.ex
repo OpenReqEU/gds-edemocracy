@@ -3,14 +3,16 @@ defmodule ExVote.Projects do
   import Logger
 
   alias ExVote.Repo
-  alias ExVote.Projects.{Project, ProjectServer}
+  alias ExVote.Projects.{Project, ProjectServer, Participation, Ticket}
 
   def list_projects do
-    # Fetch all projects with associated tickets
-    query = from p in Project,
-      left_join: t in assoc(p, :tickets),
-      preload: [tickets: t],
-      order_by: [desc: p.inserted_at]
+    # Fetch all projects with associated tickets and participations
+    query = from project in Project,
+      left_join: tickets in assoc(project, :tickets),
+      left_join: participations in assoc(project, :participations),
+      left_join: user in assoc(participations, :user),
+      preload: [tickets: tickets, participations: {participations, user: user}],
+      order_by: [desc: project.inserted_at]
 
     query
     |> Repo.all()
@@ -27,13 +29,22 @@ defmodule ExVote.Projects do
   end
 
   def create_project(attrs \\ %{}) do
-    project =
+    {:ok, project} =
       %Project{}
       |> Project.changeset_create(attrs)
       |> Repo.insert()
 
-    with {:ok, %{:id => id} = project} <- project,
-         project_with_phase <- Project.compute_phase(project),
+    # participations = from participation in Participation,
+    #   left_join: user in assoc(participation, :user),
+    #   preload: [user: user],
+    #   order_by: [desc: user.inserted_at]
+
+    tickets = from ticket in Ticket,
+      order_by: [desc: ticket.inserted_at]
+
+    project = project |> Repo.preload([tickets: tickets])
+
+    with project_with_phase <- Project.compute_phase(project),
          {:ok, _} <- start_project_server(project_with_phase) do
       {:ok, project_with_phase}
     else

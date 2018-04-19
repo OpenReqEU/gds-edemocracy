@@ -6,14 +6,15 @@ defmodule ExVote.Projects.Project do
   import NaiveDateTime
 
   # No idea why I have to import the surrounding namespace
-  alias ExVote.Projects.Project
+  alias ExVote.Projects.{Project, Ticket, Participation}
 
   schema "projects" do
     field :title, :string
     field :phase_candidates, :naive_datetime
     field :phase_end, :naive_datetime
     field :current_phase, :string, virtual: true
-    has_many :tickets, ExVote.Projects.Ticket
+    has_many :tickets, Ticket
+    has_many :participations, Participation
 
     timestamps()
   end
@@ -26,7 +27,7 @@ defmodule ExVote.Projects.Project do
     project
     |> cast(attrs, @allowed_attrs)
     |> validate_required(@required_attrs)
-    |> cast_assoc(:tickets, with: &ExVote.Projects.Ticket.changeset_create/2)
+    |> cast_assoc(:tickets, with: &Ticket.changeset_create/2)
   end
 
   def compute_phase(%Project{} = project, now \\ NaiveDateTime.utc_now()) do
