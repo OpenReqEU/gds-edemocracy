@@ -3,7 +3,8 @@ defmodule ExVote.Projects do
   import Logger
 
   alias ExVote.Repo
-  alias ExVote.Projects.{Project, ProjectServer, Ticket}
+  alias ExVote.Projects.{Project, ProjectServer, Ticket, Participation}
+  alias ExVote.Accounts.User
 
   def list_projects do
     # Fetch all projects with associated tickets and participations
@@ -29,27 +30,19 @@ defmodule ExVote.Projects do
   end
 
   def create_project(attrs \\ %{}) do
-    {:ok, project} =
+    insertion =
       %Project{}
       |> Project.changeset_create(attrs)
       |> Repo.insert()
 
-    # participations = from participation in Participation,
-    #   left_join: user in assoc(participation, :user),
-    #   preload: [user: user],
-    #   order_by: [desc: user.inserted_at]
-
-    tickets = from ticket in Ticket,
-      order_by: [desc: ticket.inserted_at]
-
-    project = project |> Repo.preload([tickets: tickets])
-
-    with project_with_phase <- Project.compute_phase(project),
-         {:ok, _} <- start_project_server(project_with_phase) do
-      {:ok, project_with_phase}
-    else
-      error -> error
-    end
+      with {:ok, project} <- insertion,
+            project_with_associations <- preload_associations(project),
+            project_with_phase <- Project.compute_phase(project_with_associations),
+            {:ok, _} <- start_project_server(project_with_phase) do
+        {:ok, project_with_phase}
+      else
+        error -> error
+      end
   end
 
   def delete_project(project_id) do
@@ -57,6 +50,76 @@ defmodule ExVote.Projects do
     ProjectServer.delete(project_id)
 
     deleted
+  end
+
+  def add_user(
+    %Project{:id => project_id},
+    %User{:id => user_id} = user,
+    role \\ "user",
+    candidate_summary \\ ""
+  ) do
+    attrs = %{
+      project_id: project_id,
+      user_id: user_id,
+      role: role,
+      candidate_summary: candidate_summary
+    }
+
+    insertion =
+      %Participation{}
+      |> Participation.changeset_create(attrs)
+      |> Repo.insert()
+
+    case insertion do
+      {:ok, participation} ->
+        participation = %{participation | user: user}
+        {:ok, ProjectServer.add_participation(project_id, participation)}
+      error -> error
+    end
+  end
+
+  def add_candidate_vote(%Project{} = project, %User{} = user, %User{:id => vote_id}) do
+    valid_candidate? = Enum.any?(project.participations, fn (participation) ->
+      participation.user_id == vote_id && participation.role == "candidate"
+    end)
+
+    if valid_candidate? do
+      add_vote(project, user, %{vote_candidate_id: vote_id})
+    else
+      {:error, "Invalid candidate"}
+    end
+
+  end
+
+  def add_ticket_vote(%Project{} = project, %User{} = user, %Ticket{:id => vote_id} = ticket) do
+    valid_ticket? = project.id == ticket.project_id
+    if valid_ticket?  do
+      add_vote(project, user, %{vote_ticket_id: vote_id})
+    else
+      {:error, "Ticket not valid for project"}
+    end
+  end
+
+  defp add_vote(project, user, attrs) do
+    participation = get_participation(project, user)
+    if participation do
+      participation
+      |> Participation.changeset_add_vote(attrs)
+      |> Repo.update()
+    else
+      {:error, "No existing participation"}
+    end
+  end
+
+  def get_participation(%Project{:id => project_id}, %User{:id => user_id}) do
+    participation_query = from p in Participation,
+      left_join: u in assoc(p, :user),
+      left_join: c in assoc(p, :vote_candidate),
+      left_join: t in assoc(p, :vote_ticket),
+      preload: [user: u, vote_candidate: c, vote_ticket: t],
+      where: p.project_id == ^project_id and p.user_id == ^user_id
+
+    Repo.one(participation_query)
   end
 
   def start_project_server(%Project{} = project) do
@@ -68,6 +131,17 @@ defmodule ExVote.Projects do
     match?([{_, _}], Registry.lookup(ExVote.Projects.Registry, project_id))
   end
 
+  defp preload_associations(project) do
+    participations = from participation in Participation,
+      left_join: user in assoc(participation, :user),
+      preload: [user: user],
+      order_by: [desc: user.inserted_at]
+
+    tickets = from ticket in Ticket,
+      order_by: [desc: ticket.inserted_at]
+
+    project |> Repo.preload([tickets: tickets, participations: {participations, [:user]}])
+  end
 
   # @moduledoc """
   # The Projects context.
