@@ -30,14 +30,85 @@ defmodule ExVote.Projects.Participation do
     |> assoc_constraint(:user)
   end
 
+  # @doc false
+  # def changeset_add_vote(participation, attrs) do
+  #   participation
+  #   |> cast(attrs, [:vote_candidate_id, :vote_ticket_id])
+  #   |> put_assoc(:vote_candidate, Map.get(participation, :vote_candidate, nil))
+  #   |> put_assoc(:vote_ticket, Map.get(participation, :vote_ticket, nil))
+  #   |> validate_role()
+  #   |> validate_vote()
+  # end
+
   @doc false
-  def changeset_add_vote(participation, attrs) do
+  def changeset_add_candidate_vote(participation, attrs) do
     participation
-    |> cast(attrs, [:vote_candidate_id, :vote_ticket_id])
-    |> put_assoc(:vote_candidate, Map.get(participation, :vote_candidate, nil))
-    |> put_assoc(:vote_ticket, Map.get(participation, :vote_ticket, nil))
+    |> cast(attrs, [:vote_candidate_id])
     |> validate_role()
-    |> validate_vote()
+    |> validate_candidate_vote_sender()
+    |> validate_candidate_vote_receiver()
+  end
+
+  def changeset_add_ticket_vote(participation, attrs) do
+    participation
+    |> cast(attrs, [:vote_ticket_id])
+    |> validate_role()
+    |> validate_ticket_vote_sender()
+    |> validate_ticket_vote_receiver(attrs)
+  end
+
+  defp validate_candidate_vote_sender(changeset) do
+    role = get_field(changeset, :role, nil)
+    if role == "user" do
+      has_ticket? = get_field(changeset, :vote_ticket_id, nil) != nil
+      if has_ticket? do
+        add_error(changeset, :vote_ticket, "Permission denied for role")
+      else
+        assoc_constraint(changeset, :vote_candidate)
+      end
+    else
+      add_error(changeset, :vote_candidate, "Permission denied for role")
+    end
+  end
+
+  defp validate_candidate_vote_receiver(changeset) do
+    project = get_field(changeset, :project, nil)
+    vote_candidate_id = get_field(changeset, :vote_candidate_id, nil)
+    valid_candidate? = Enum.any?(project.participations, fn (participation) ->
+      participation.user_id == vote_candidate_id && participation.role == "candidate"
+    end)
+
+    if valid_candidate? do
+      changeset
+    else
+      add_error(changeset, :vote_candidate_id, "Invalid candidate")
+    end
+  end
+
+  defp validate_ticket_vote_sender(changeset) do
+    role = get_field(changeset, :role, nil)
+    if role == "candidate" do
+      has_candidate? = get_field(changeset, :vote_candidate_id, nil) != nil
+      if has_candidate? do
+        add_error(changeset, :vote_candidate, "Permission denied for role")
+      else
+        assoc_constraint(changeset, :vote_ticket)
+      end
+    else
+      add_error(changeset, :vote_ticket, "Permission denied for role")
+    end
+  end
+
+  defp validate_ticket_vote_receiver(changeset, attrs) do
+    project = get_field(changeset, :project, nil)
+    ticket = attrs.vote_ticket
+    valid_ticket? = project.id == ticket.project_id
+
+    if valid_ticket? do
+      changeset
+    else
+      add_error(changeset, :vote_ticket_id, "Invalid ticket")
+    end
   end
 
   defp validate_role(changeset) do
@@ -55,57 +126,4 @@ defmodule ExVote.Projects.Participation do
       changeset
     end
   end
-
-  defp validate_vote(changeset) do
-    role = get_field(changeset, :role, nil)
-    vote_candidate_id = get_field(changeset, :vote_candidate_id, nil)
-    vote_ticket_id = get_field(changeset, :vote_ticket_id, nil)
-
-    case role do
-      "user" ->
-          if vote_ticket_id do
-            add_error(changeset, :vote_ticket, "Permission denied for role")
-          else
-            assoc_constraint(changeset, :vote_candidate)
-          end
-      "candidate" ->
-          if vote_candidate_id do
-            add_error(changeset, :vote_candidate, "Permission denied for role")
-          else
-            assoc_constraint(changeset, :vote_ticket)
-          end
-    end
-  end
-
-  # defp validate_vote_candidate(changeset) do
-  #   role = get_field(changeset, :role, nil)
-  #   candidate_id = get_change(changeset, :vote_candidate_id)
-
-  #   if candidate_id do
-  #     if role != "user" do
-  #       add_error(changeset, :vote_candidate, "Invalid vote type for role")
-  #     else
-  #       changeset
-  #       |> assoc_constraint(:vote_candidate)
-  #     end
-  #   else
-  #     changeset
-  #   end
-  # end
-
-  # defp validate_vote_ticket(changeset) do
-  #   role = get_field(changeset, :role, nil)
-  #   ticket_id = get_change(changeset, :vote_ticket_id)
-
-  #   if ticket_id do
-  #     if role != "candidate" do
-  #       add_error(changeset, :vote_ticket, "Invalid vote type for role")
-  #     else
-  #       changeset
-  #       |> assoc_constraint(:vote_ticket)
-  #     end
-  #   else
-  #     changeset
-  #   end
-  # end
 end

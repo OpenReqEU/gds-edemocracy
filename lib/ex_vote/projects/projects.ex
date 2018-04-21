@@ -78,33 +78,26 @@ defmodule ExVote.Projects do
     end
   end
 
-  def add_candidate_vote(%Project{} = project, %User{} = user, %User{:id => vote_id}) do
-    valid_candidate? = Enum.any?(project.participations, fn (participation) ->
-      participation.user_id == vote_id && participation.role == "candidate"
-    end)
-
-    if valid_candidate? do
-      add_vote(project, user, %{vote_candidate_id: vote_id})
-    else
-      {:error, "Invalid candidate"}
-    end
-
-  end
-
-  def add_ticket_vote(%Project{} = project, %User{} = user, %Ticket{:id => vote_id} = ticket) do
-    valid_ticket? = project.id == ticket.project_id
-    if valid_ticket?  do
-      add_vote(project, user, %{vote_ticket_id: vote_id})
-    else
-      {:error, "Ticket not valid for project"}
-    end
-  end
-
-  defp add_vote(project, user, attrs) do
+  def add_candidate_vote(%Project{} = project, %User{} = user, %User{:id => candidate_id}) do
+    attrs = %{vote_candidate_id: candidate_id}
     participation = get_participation(project, user)
+
     if participation do
-      participation
-      |> Participation.changeset_add_vote(attrs)
+      %{participation | project: project, user: user}
+      |> Participation.changeset_add_candidate_vote(attrs)
+      |> Repo.update()
+    else
+      {:error, "No existing participation"}
+    end
+  end
+
+  def add_ticket_vote(%Project{} = project, %User{} = user, %Ticket{} = ticket) do
+    attrs = %{vote_ticket: ticket}
+    participation = get_participation(project, user)
+
+    if participation do
+      %{participation | project: project, user: user}
+      |> Participation.changeset_add_ticket_vote(attrs)
       |> Repo.update()
     else
       {:error, "No existing participation"}
