@@ -9,10 +9,11 @@ defmodule ExVote.Application do
     children = [
       ExVote.Repo,
       ExVoteWeb.Endpoint,
+      # Phases
+      {Registry, keys: :unique, name: ExVote.Phases.ProjectPhasesRegistry},
+      {DynamicSupervisor, strategy: :one_for_one, name: ExVote.Phases.ProjectPhasesSupervisor},
       # Projects
-      {Registry, keys: :unique, name: ExVote.Projects.Registry},
-      {DynamicSupervisor, strategy: :one_for_one, name: ExVote.Projects.Supervisor},
-      ExVote.Projects.Loader
+      ExVote.Projects.PhaseServerLoader
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
