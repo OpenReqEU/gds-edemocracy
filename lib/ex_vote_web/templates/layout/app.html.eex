@@ -20,6 +20,17 @@
             <h1 class="title">ExVote</h1>
           </div>
         </div>
+        <div class="navbar-menu">
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <%= if @user do %>
+                <span>Hello <%= @user.name %>!</span>
+              <% else %>
+                <a href="<%= user_path(@conn, :login) %>">Login</a>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
     <section class="section">

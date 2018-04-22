@@ -18,7 +18,7 @@ defmodule ExVote.Accounts do
     |> Repo.insert()
   end
 
-  def login(username) do
+  def login(%{:username => username}) do
     query = from u in User,
       where: u.name == ^username
 
