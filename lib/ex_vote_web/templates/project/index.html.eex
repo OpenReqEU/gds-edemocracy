@@ -1,0 +1,20 @@
+<%= Enum.map(@projects, fn(project) -> %>
+  <div class="box">
+    <%= project.title %>
+
+    <%= case project.current_phase do %>
+      <% :phase_users -> %>
+        <span class="tag is-success is-pulled-right">
+          Registration open
+        </span>
+      <% :phase_candidates -> %>
+        <span class="tag is-info is-pulled-right">
+          Delegate voting in progress
+        </span>
+      <% :phase_end -> %>
+        <span class="tag is-light is-pulled-right">
+          Project has ended
+        </span>
+    <% end %>
+  </div>
+<% end) %>
