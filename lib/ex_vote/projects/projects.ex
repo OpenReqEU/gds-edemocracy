@@ -3,8 +3,10 @@ defmodule ExVote.Projects do
 
   alias ExVote.Repo
   alias ExVote.Phases
-  alias ExVote.Projects.{Project, Ticket, Participation}
+  alias ExVote.Projects.{Project, Ticket}
   alias ExVote.Accounts.User
+  alias ExVote.Participations
+  alias ExVote.Participations.{UserParticipation, CandidateParticipation}
 
   def list_projects do
     Project
@@ -20,11 +22,11 @@ defmodule ExVote.Projects do
   end
 
   def create_project(attrs \\ %{}) do
-    insertion = %Project{}
+    result = %Project{}
     |> Project.changeset_create(attrs)
     |> Repo.insert()
 
-    case insertion do
+    case result do
       {:ok, project} ->
         project = Project.compute_phase(project)
         Phases.start_phase_server(project)
@@ -37,67 +39,77 @@ defmodule ExVote.Projects do
 
   def delete_project(project_id) do
     Repo.delete(%Project{id: project_id})
+    # TODO: shut down the phase server
   end
 
-  def add_user(
-    %Project{:id => project_id},
-    %User{:id => user_id},
-    role \\ "user",
-    candidate_summary \\ ""
-  ) do
+  def add_user(%Project{:id => project_id}, %User{:id => user_id}) do
     attrs = %{
       project_id: project_id,
       user_id: user_id,
-      role: role,
+      role: "user",
+    }
+
+    ExVote.Participations.create_participation(attrs)
+  end
+
+  def add_candidate(%Project{:id => project_id}, %User{:id => user_id}, candidate_summary) do
+    attrs = %{
+      project_id: project_id,
+      user_id: user_id,
+      role: "candidate",
       candidate_summary: candidate_summary
     }
 
-    insertion =
-      %Participation{}
-      |> Participation.changeset_create(attrs)
-      |> Repo.insert()
-
-    case insertion do
-      {:ok, _} = ok -> ok
-      error -> error
-    end
+    Participations.create_participation(attrs)
   end
 
-  def add_candidate_vote(%Project{} = project, %User{} = user, %User{:id => candidate_id}) do
-    attrs = %{vote_candidate_id: candidate_id}
-    participation = get_participation(project, user)
+  def add_user_vote(%Project{} = project, %User{} = user, %User{} = candidate) do
+    # TODO: expose some kind of function to fetch multiple records at once
+    user_participation = Participations.get_participation(project, user, "user")
+    candidate_participation = Participations.get_participation(project, candidate, "candidate")
 
-    if participation do
-      %{participation | project: project, user: user}
-      |> Participation.changeset_add_candidate_vote(attrs)
-      |> Repo.update()
-    else
-      {:error, "No existing participation"}
-    end
+    handle_user_vote(user_participation, candidate_participation)
   end
 
-  def add_ticket_vote(%Project{} = project, %User{} = user, %Ticket{} = ticket) do
-    attrs = %{vote_ticket: ticket}
-    participation = get_participation(project, user)
+  defp handle_user_vote(nil, _), do: {:error, "Invalid user"}
+  defp handle_user_vote(_, nil), do: {:error, "Invalid vote"}
 
-    if participation do
-      %{participation | project: project, user: user}
-      |> Participation.changeset_add_ticket_vote(attrs)
-      |> Repo.update()
-    else
-      {:error, "No existing participation"}
-    end
+  defp handle_user_vote(
+    %UserParticipation{} = user_participation,
+    %CandidateParticipation{:user_id => candidate_id}
+  ) do
+    vote = %{
+      vote_user_id: candidate_id
+    }
+
+    Participations.update_vote(user_participation, vote)
   end
 
-  def get_participation(%Project{:id => project_id}, %User{:id => user_id}) do
-    participation_query = from p in Participation,
-      left_join: u in assoc(p, :user),
-      left_join: c in assoc(p, :vote_candidate),
-      left_join: t in assoc(p, :vote_ticket),
-      preload: [user: u, vote_candidate: c, vote_ticket: t],
-      where: p.project_id == ^project_id and p.user_id == ^user_id
+  def add_candidate_vote(%Project{} = project, %User{} = user, %Ticket{} = ticket) do
+    candidate_participation = Participations.get_participation(project, user, "candidate")
 
-    Repo.one(participation_query)
+    valid_ticket? = project
+    |> Repo.preload(:tickets)
+    |> Map.get(:tickets)
+    |> Enum.any?(fn(%Ticket{:id => id}) -> id == ticket.id end)
+
+    handle_candidate_vote(candidate_participation, ticket, valid_ticket?)
+  end
+
+  defp handle_candidate_vote(nil, _, _), do: {:error, "Invalid user"}
+  defp handle_candidate_vote(_, nil, _), do: {:error, "Invalid vote"}
+  defp handle_candidate_vote(_, _, false), do: {:error, "Invalid vote"}
+
+  defp handle_candidate_vote(
+    %CandidateParticipation{} = candidate,
+    %Ticket{:id => ticket_id},
+    true
+  ) do
+    vote = %{
+      vote_candidate_id: ticket_id
+    }
+
+    Participations.update_vote(candidate, vote)
   end
 
   # @moduledoc """
