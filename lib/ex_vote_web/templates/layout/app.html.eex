@@ -22,9 +22,14 @@
         </div>
         <div class="navbar-menu">
           <div class="navbar-end">
+            <%= if @user do %>
+              <div class="navbar-item">
+                <span>Hello <%= @user.name %>!</span>
+              </div>
+            <% end %>
             <div class="navbar-item">
               <%= if @user do %>
-                <span>Hello <%= @user.name %>!</span>
+                <a href="<%= user_path(@conn, :logout) %>">Logout</a>
               <% else %>
                 <a href="<%= user_path(@conn, :login) %>">Login</a>
               <% end %>

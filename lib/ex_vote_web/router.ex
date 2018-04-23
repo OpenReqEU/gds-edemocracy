@@ -20,8 +20,11 @@ defmodule ExVoteWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", ProjectController, :index
+
     get "/users/login", UserController, :login
     post "/users/login", UserController, :login
+
+    get "/users/logout", UserController, :logout
   end
 
   # Other scopes may use custom stacks.

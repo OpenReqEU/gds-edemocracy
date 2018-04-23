@@ -41,6 +41,7 @@ defmodule ExVote.Participations do
   end
 
   defp cast_participation(%Participation{:role => "user"} = participation) do
+    # TODO: replace convoluted casting with Changeset.apply_changes()
     changeset = %UserParticipation{}
     |> UserParticipation.changeset_cast(Map.from_struct(participation))
 
@@ -48,6 +49,7 @@ defmodule ExVote.Participations do
   end
 
   defp cast_participation(%Participation{:role => "candidate"} = participation) do
+    # TODO: replace convoluted casting with Changeset.apply_changes()
     changeset = %CandidateParticipation{}
     |> CandidateParticipation.changeset_cast(Map.from_struct(participation))
 

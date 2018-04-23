@@ -1,0 +1,26 @@
+<div class="columns">
+  <div class="column is-half is-offset-one-quarter">
+    <div class="box">
+      <h2 class="title">Login</h2>
+      <%= form_for @changeset, user_path(@conn, :login), fn f -> %>
+        <div class="field">
+          <label class="label">
+            Username
+            <div class="control">
+              <% name_class = "input#{if errors?(f, :name), do: " is-danger"}" %>
+              <%= text_input f, :name, class: name_class %>
+            </div>
+          </label>
+          <%= error_tag f, :name %>
+        </div>
+        <div class="field is-grouped is-grouped-centered">
+          <div class="control">
+            <%= submit "Login", class: "button is-link" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+</div>

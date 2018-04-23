@@ -10,8 +10,15 @@ defmodule ExVoteWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn (error) ->
-      content_tag :span, translate_error(error), class: "help-block"
+      content_tag :p, translate_error(error), class: "help is-danger"
     end)
+  end
+
+  @doc """
+  Checks a field for errors.
+  """
+  def errors?(form, field) do
+    Enum.any?(Keyword.get_values(form.errors, field), fn _ -> true end)
   end
 
   @doc """

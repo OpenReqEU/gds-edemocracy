@@ -18,13 +18,26 @@ defmodule ExVote.Accounts do
     |> Repo.insert()
   end
 
-  def login(%{:username => username}) do
+  def login(attrs \\ %{}) do
+    %User{}
+    |> User.changeset_create(attrs) # TODO: Create changeset_login
+    |> check_login()
+    |> Ecto.Changeset.apply_action(:insert)
+  end
+
+  defp check_login(%{:valid? => false} = changeset), do: changeset
+
+  defp check_login(%{:valid? => true} = changeset) do
+    username = Ecto.Changeset.get_field(changeset, :name)
+
     query = from u in User,
       where: u.name == ^username
 
     case Repo.one(query) do
-      %User{} = user -> {:ok, user}
-      nil -> {:error, "Username not found"}
+      %User{} ->
+        changeset
+      nil ->
+        Ecto.Changeset.add_error(changeset, :name, "Username not found")
     end
   end
 
