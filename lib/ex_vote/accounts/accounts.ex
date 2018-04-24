@@ -34,10 +34,12 @@ defmodule ExVote.Accounts do
       where: u.name == ^username
 
     case Repo.one(query) do
-      %User{} ->
+      %User{:id => id} ->
         changeset
+        |> Ecto.Changeset.put_change(:id, id)
       nil ->
-        Ecto.Changeset.add_error(changeset, :name, "Username not found")
+        changeset
+        |> Ecto.Changeset.add_error(:name, "Username not found")
     end
   end
 

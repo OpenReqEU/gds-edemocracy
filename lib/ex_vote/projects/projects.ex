@@ -14,11 +14,26 @@ defmodule ExVote.Projects do
     |> Enum.map(&Project.compute_phase/1)
   end
 
-  def get_project(project_id) do
+  def get_project(project_id, assocs \\ []) when is_list(assocs) do
     query = from p in Project,
       where: p.id == ^project_id
 
-    Repo.one(query)
+    query_with_assocs = Enum.reduce(assocs, query, fn(association, query) ->
+      from p in query,
+        left_join: a in assoc(p, ^association),
+        preload: [{^association, a}]
+    end)
+
+    result =
+      Repo.one(query_with_assocs)
+      |> Project.compute_phase()
+
+    if is_list(Map.get(result, :participations)) do
+      casted_participations = Enum.map(result.participations, &Participations.cast_participation/1)
+      %{result | participations: casted_participations}
+    else
+      result
+    end
   end
 
   def create_project(attrs \\ %{}) do

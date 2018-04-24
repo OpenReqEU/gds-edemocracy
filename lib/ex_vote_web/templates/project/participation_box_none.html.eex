@@ -1,0 +1,25 @@
+<%= case @project.current_phase do %>
+  <% :phase_users -> %>
+    <div class="level">
+      <div class="level-item has-text-centered">
+        <div>
+          <p>Join this project as a user and vote for a candidate</p>
+          <br />
+          <button class="button">Join as a user</button>
+        </div>
+      </div>
+
+      <div class="level-item has-text-centered">
+        <div>
+          <p>Join this project as a candidate and vote for tickets</p>
+          <br />
+          <button class="button">Join as a candidate</button>
+        </div>
+      </div>
+    </div>
+  <% :phase_candidates -> %>
+    candidates
+  <% :phase_end -> %>
+    end
+
+<% end %>

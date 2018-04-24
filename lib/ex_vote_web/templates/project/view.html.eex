@@ -1,0 +1,49 @@
+<%= render(ExVoteWeb.ProjectView, "phase_info_box.html", assigns) %>
+
+<hr />
+<div class="box">
+  <h2 class="title is-spaced"><%= @project.title %></h2>
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Partcipations</p>
+        <p class="title"><%= length(@project.participations) %></p>
+      </div>
+    </div>
+
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Current phase</p>
+        <p class="title"><%= phase_name(@project.current_phase) %></p>
+      </div>
+    </div>
+
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Next phase</p>
+        <p class="title"><%= format_date(@project.phase_end) %></p>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <h3 class="subtitle is-spaced">Tickets</h3>
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Title</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= Enum.map(@project.tickets, fn(ticket) -> %>
+      <tr>
+        <td>
+          <a href="<%= ticket.url %>"><%= ticket.title %></a>
+        </td>
+      </tr>
+    <% end) %>
+    </tbody>
+  </table>
+</div>
+<hr />
+
+<%= render(ExVoteWeb.ProjectView, "participation_box.html", assigns) %>

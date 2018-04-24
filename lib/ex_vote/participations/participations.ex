@@ -40,20 +40,16 @@ defmodule ExVote.Participations do
     end
   end
 
-  defp cast_participation(%Participation{:role => "user"} = participation) do
-    # TODO: replace convoluted casting with Changeset.apply_changes()
-    changeset = %UserParticipation{}
+  def cast_participation(%{:role => "user"} = participation) do
+    %UserParticipation{}
     |> UserParticipation.changeset_cast(Map.from_struct(participation))
-
-    struct(UserParticipation, changeset.changes)
+    |> Ecto.Changeset.apply_changes()
   end
 
-  defp cast_participation(%Participation{:role => "candidate"} = participation) do
-    # TODO: replace convoluted casting with Changeset.apply_changes()
-    changeset = %CandidateParticipation{}
+  def cast_participation(%Participation{:role => "candidate"} = participation) do
+    %CandidateParticipation{}
     |> CandidateParticipation.changeset_cast(Map.from_struct(participation))
-
-    struct(CandidateParticipation, changeset.changes)
+    |> Ecto.Changeset.apply_changes()
   end
 
   def create_participation(%{:role => "user"} = attrs) do

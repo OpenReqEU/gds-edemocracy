@@ -17,7 +17,7 @@
       <div class="container">
         <div class="navbar-brand">
           <div class="navbar-item">
-            <h1 class="title">ExVote</h1>
+            <a href="<%= project_path(@conn, :index) %>" <h1 class="title">ExVote</h1></a>
           </div>
         </div>
         <div class="navbar-menu">

@@ -5,8 +5,8 @@ defmodule ExVote.Projects.Project do
   import Logger
   import NaiveDateTime
 
-  # No idea why I have to import the surrounding namespace
-  alias ExVote.Projects.{Project, Ticket, Participation}
+  alias ExVote.Participations.Participation
+  alias ExVote.Projects.{Project, Ticket}
 
   schema "projects" do
     field :title, :string
