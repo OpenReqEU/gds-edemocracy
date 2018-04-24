@@ -5,7 +5,13 @@
         <div>
           <p>Join this project as a user and vote for a candidate</p>
           <br />
-          <button class="button">Join as a user</button>
+          <%= form_for @create_user_changeset, project_path(@conn, :add_user), fn f -> %>
+            <%= hidden_input f, :project_id, value: @project.id %>
+            <%= hidden_input f, :user_id, value: @user.id %>
+            <div class="field">
+              <%= submit "Join as a user", class: "button" %>
+            </div>
+          <% end %>
         </div>
       </div>
 
@@ -13,7 +19,16 @@
         <div>
           <p>Join this project as a candidate and vote for tickets</p>
           <br />
-          <button class="button">Join as a candidate</button>
+          <%= form_for @create_candidate_changeset, project_path(@conn, :add_candidate), fn f -> %>
+            <%= hidden_input f, :project_id, value: @project.id %>
+            <%= hidden_input f, :user_id, value: @user.id %>
+            <div class="field">
+              <%= textarea f, :candidate_summary, class: "textarea" %>
+            </div>
+            <div class="field">
+              <%= submit "Join as a candidate", class: "button" %>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>

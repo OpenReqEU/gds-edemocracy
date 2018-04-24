@@ -5,6 +5,16 @@ defmodule ExVoteWeb.ProjectView do
     Timex.format!(date, "{relative}", :relative)
   end
 
+  def time_to_next_phase(project) do
+    next_phase_date = ExVote.Projects.Project.next_phase_at(project)
+
+    if next_phase_date do
+      Timex.format!(next_phase_date, "{relative}", :relative)
+    else
+      "-"
+    end
+  end
+
   def phase_name(:phase_users), do: "Open participation"
   def phase_name(:phase_candidates), do: "Delegate voting"
   def phase_name(:phase_end), do: "Ended"

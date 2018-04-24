@@ -2,6 +2,7 @@ defmodule ExVoteWeb.ProjectController do
   use ExVoteWeb, :controller
 
   alias ExVote.Projects
+  alias ExVote.Participations
 
   def index(conn, _params) do
     projects = Projects.list_projects()
@@ -13,9 +14,55 @@ defmodule ExVoteWeb.ProjectController do
 
   def view(conn, %{"id" => project_id}) do
     project = Projects.get_project(project_id, [:participations, :tickets])
+    create_user_changeset =
+      Participations.UserParticipation.changeset_create(%Participations.UserParticipation{}, %{})
+    create_candidate_changeset =
+      Participations.CandidateParticipation.changeset_create(%Participations.CandidateParticipation{}, %{})
 
     conn
+    |> assign(:create_candidate_changeset, create_candidate_changeset)
+    |> assign(:create_user_changeset, create_user_changeset)
     |> assign(:project, project)
     |> render("view.html")
+  end
+
+  def add_user(conn, %{"user_participation" => participation}) do
+    case Projects.add_user(participation) do
+      {:ok, participation} ->
+        conn
+        |> put_flash(:info, "You successfully joined the project as a user!")
+        |> redirect(to: project_path(conn, :view, participation.project_id))
+      {:error, changeset} ->
+        redirect_url =
+          if project_id = Ecto.Changeset.get_field(changeset, :project_id) do
+            project_path(conn, :view, project_id)
+          else
+            project_path(conn, :index)
+          end
+
+        conn
+        |> put_flash(:error, "Failed to join project")
+        |> redirect(to: redirect_url)
+    end
+  end
+
+  def add_candidate(conn, %{"candidate_participation" => participation}) do
+    case Projects.add_candidate(participation) do
+      {:ok, participation} ->
+        conn
+        |> put_flash(:info, "You successsfully joined the project as a candidate!")
+        |> redirect(to: project_path(conn, :view, participation.project_id))
+      {:error, changeset} ->
+        redirect_url =
+          if project_id = Ecto.Changeset.get_field(changeset, :project_id) do
+            project_path(conn, :view, project_id)
+          else
+            project_path(conn, :index)
+          end
+
+        conn
+        |> put_flash(:error, "Failed to join project")
+        |> redirect(to: redirect_url)
+    end
   end
 end

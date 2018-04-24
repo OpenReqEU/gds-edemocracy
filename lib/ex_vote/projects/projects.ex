@@ -67,6 +67,12 @@ defmodule ExVote.Projects do
     ExVote.Participations.create_participation(attrs)
   end
 
+  def add_user(attrs \\ %{}) do
+    attrs
+    |> Map.put("role", "user")
+    |> ExVote.Participations.create_participation()
+  end
+
   def add_candidate(%Project{:id => project_id}, %User{:id => user_id}, candidate_summary) do
     attrs = %{
       project_id: project_id,
@@ -76,6 +82,12 @@ defmodule ExVote.Projects do
     }
 
     Participations.create_participation(attrs)
+  end
+
+  def add_candidate(attrs \\ %{}) do
+    attrs
+    |> Map.put("role", "candidate")
+    |> ExVote.Participations.create_participation()
   end
 
   def add_user_vote(%Project{} = project, %User{} = user, %User{} = candidate) do

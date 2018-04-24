@@ -21,7 +21,7 @@
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Next phase</p>
-        <p class="title"><%= format_date(@project.phase_end) %></p>
+        <p class="title"><%= time_to_next_phase(@project) %></p>
       </div>
     </div>
   </div>

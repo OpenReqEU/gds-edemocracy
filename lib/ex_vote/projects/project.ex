@@ -60,4 +60,8 @@ defmodule ExVote.Projects.Project do
     {:phase_candidates, time_left}
   end
 
+  def next_phase_at(%Project{:current_phase => :phase_end}), do: nil
+  def next_phase_at(%Project{:current_phase => :phase_candidates, :phase_end => phase_end}), do: phase_end
+  def next_phase_at(%Project{:current_phase => :phase_users, :phase_candidates => phase_candidates}), do: phase_candidates
+
 end
