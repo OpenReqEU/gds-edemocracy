@@ -20,8 +20,6 @@ defmodule ExVoteWeb.ProjectController do
       Participations.CandidateParticipation.changeset_create(%Participations.CandidateParticipation{}, %{})
 
     conn
-    |> assign(:create_candidate_changeset, create_candidate_changeset)
-    |> assign(:create_user_changeset, create_user_changeset)
     |> assign(:project, project)
     |> render("view.html")
   end
@@ -50,7 +48,7 @@ defmodule ExVoteWeb.ProjectController do
     case Projects.add_candidate(participation) do
       {:ok, participation} ->
         conn
-        |> put_flash(:info, "You successsfully joined the project as a candidate!")
+        |> put_flash(:info, "You successfully joined the project as a candidate!")
         |> redirect(to: project_path(conn, :view, participation.project_id))
       {:error, changeset} ->
         redirect_url =
@@ -63,6 +61,19 @@ defmodule ExVoteWeb.ProjectController do
         conn
         |> put_flash(:error, "Failed to join project")
         |> redirect(to: redirect_url)
+    end
+  end
+
+  def add_user_vote(conn, %{"user_participation" => participation}) do
+    case Projects.add_user_vote(participation) do
+      {:ok, participation} ->
+        conn
+        |> put_flash(:info, "Your vote has been received!")
+        |> redirect(to: project_path(conn, :view, participation.project_id))
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "Failed to update vote")
+        |> redirect(to: "/")
     end
   end
 end

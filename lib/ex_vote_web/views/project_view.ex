@@ -1,6 +1,8 @@
 defmodule ExVoteWeb.ProjectView do
   use ExVoteWeb, :view
 
+  alias ExVote.Participations
+
   # Overridden render functions
 
   def render("components/info_box.html", assigns) do
@@ -57,9 +59,34 @@ defmodule ExVoteWeb.ProjectView do
   def phase_name(:phase_candidates), do: "Delegate voting"
   def phase_name(:phase_end), do: "Ended"
 
-  def project_user_participation_role(%{:participations => participations} = p, %{:id => user_id}) do
+  def changeset_create_user do
+    Participations.UserParticipation.changeset_create(%Participations.UserParticipation{}, %{})
+  end
+
+  def changeset_create_candidate do
+    Participations.CandidateParticipation.changeset_create(%Participations.CandidateParticipation{}, %{})
+  end
+
+  def changeset_add_user_vote do
+    Participations.UserParticipation.changeset_update_vote(%Participations.UserParticipation{}, %{})
+  end
+
+  def project_user_participation_role(%{:participations => participations}, %{:id => user_id}) do
     Enum.find_value(participations, fn(participation) ->
       participation.user_id == user_id && participation.role
+    end)
+  end
+
+  def get_candidates(project) do
+    ExVote.Participations.get_participations(project, "candidate")
+  end
+
+  def project_user_has_voted?(%{:participations => participations}, %{:id => user_id}) do
+    Enum.any?(participations, fn
+      %Participations.UserParticipation{} = participation ->
+        participation.user_id == user_id && participation.vote_user_id
+      %Participations.CandidateParticipation{} = participation ->
+        participation.user_id == user_id && participation.vote_candidate_id
     end)
   end
 

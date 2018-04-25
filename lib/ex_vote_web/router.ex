@@ -23,6 +23,7 @@ defmodule ExVoteWeb.Router do
     get "/projects/view/:id", ProjectController, :view
     post "/projects/add_user", ProjectController, :add_user
     post "/projects/add_candidate", ProjectController, :add_candidate
+    post "/projects/add_user_vote", ProjectController, :add_user_vote
 
     get "/users/login", UserController, :login
     post "/users/login", UserController, :login

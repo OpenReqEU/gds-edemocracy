@@ -64,13 +64,13 @@ defmodule ExVote.Projects do
       role: "user",
     }
 
-    ExVote.Participations.create_participation(attrs)
+    Participations.create_participation(attrs)
   end
 
   def add_user(attrs \\ %{}) do
     attrs
     |> Map.put("role", "user")
-    |> ExVote.Participations.create_participation()
+    |> Participations.create_participation()
   end
 
   def add_candidate(%Project{:id => project_id}, %User{:id => user_id}, candidate_summary) do
@@ -87,7 +87,7 @@ defmodule ExVote.Projects do
   def add_candidate(attrs \\ %{}) do
     attrs
     |> Map.put("role", "candidate")
-    |> ExVote.Participations.create_participation()
+    |> Participations.create_participation()
   end
 
   def add_user_vote(%Project{} = project, %User{} = user, %User{} = candidate) do
@@ -96,6 +96,12 @@ defmodule ExVote.Projects do
     candidate_participation = Participations.get_participation(project, candidate, "candidate")
 
     handle_user_vote(user_participation, candidate_participation)
+  end
+
+  def add_user_vote(attrs \\ %{}) do
+    # TODO: handle error cases (candidate not in project, see add_user_vote/2)
+    Participations.get_participation(%{id: Map.get(attrs, "project_id")}, %{id: Map.get(attrs, "user_id")})
+    |> Participations.update_vote(attrs)
   end
 
   defp handle_user_vote(nil, _), do: {:error, "Invalid user"}

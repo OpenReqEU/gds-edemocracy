@@ -1,16 +1,40 @@
 <%= case project_user_participation_role(@project, @user) do %>
   <% "user" -> %>
-  user
+    <%= if project_user_has_voted?(@project, @user) do %>
+      <h3 class="subtitle">Thank you for voting</h3>
+    <% else %>
+      <h3 class="title">Vote now for one of the candidates:</h3>
+      <%= for candidate <- get_candidates(@project) do %>
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title"><%= candidate.user.name %></p>
+          </header>
+          <div class="card-content">
+            <p><%= candidate.candidate_summary %></p>
+            <hr />
+            <%= form_for changeset_add_user_vote(), project_path(@conn, :add_user_vote), fn f -> %>
+              <%= hidden_input f, :project_id, value: @project.id %>
+              <%= hidden_input f, :user_id, value: @user.id %>
+              <%= hidden_input f, :vote_user_id, value: candidate.user_id %>
+              <div class="field">
+                <%= submit "Vote for #{candidate.user.name}", class: "button is-success" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <br />
+      <% end %>
+    <% end %>
   <% "candidate" -> %>
-  candidate
+    <p>Thank you for registering as a candidate! You may vote for tickets once the next phase begins.</p>
 
   <% nil -> %>
-    <div class="level">
-      <div class="level-item has-text-centered">
+    <div class="columns">
+      <div class="column has-text-centered">
         <div>
           <p>Join this project as a user and vote for a candidate</p>
           <br />
-          <%= form_for @create_user_changeset, project_path(@conn, :add_user), fn f -> %>
+          <%= form_for changeset_create_user(), project_path(@conn, :add_user), fn f -> %>
             <%= hidden_input f, :project_id, value: @project.id %>
             <%= hidden_input f, :user_id, value: @user.id %>
             <div class="field">
@@ -20,11 +44,11 @@
         </div>
       </div>
 
-      <div class="level-item has-text-centered">
+      <div class="column has-text-centered">
         <div>
           <p>Join this project as a candidate and vote for tickets</p>
           <br />
-          <%= form_for @create_candidate_changeset, project_path(@conn, :add_candidate), fn f -> %>
+          <%= form_for changeset_create_candidate(), project_path(@conn, :add_candidate), fn f -> %>
             <%= hidden_input f, :project_id, value: @project.id %>
             <%= hidden_input f, :user_id, value: @user.id %>
             <div class="field">

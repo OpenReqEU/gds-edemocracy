@@ -12,7 +12,9 @@ defmodule ExVote.Participations do
 
   def get_participations(%Project{:id => project_id}, role_filter \\ nil) do
     query = from p in Participation,
-      where: p.project_id == ^project_id
+      where: p.project_id == ^project_id,
+      left_join: u in assoc(p, :user),
+      preload: [user: u]
 
     query = if role_filter do
       from p in query,
@@ -25,13 +27,15 @@ defmodule ExVote.Participations do
     |> Enum.map(&cast_participation/1)
   end
 
-  def get_participation(%Project{:id => project_id}, %User{:id => user_id}, role_filter \\ nil) do
+  def get_participation(%{:id => project_id}, %{:id => user_id}, role_filter \\ nil) do
     query = from p in Participation,
       where: p.project_id == ^project_id and p.user_id == ^user_id
 
     query = if role_filter do
       from p in query,
         where: p.role == ^role_filter
+    else
+      query
     end
 
     case Repo.one(query) do

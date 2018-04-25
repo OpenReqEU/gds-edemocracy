@@ -35,8 +35,15 @@ defmodule ExVote.Participations.UserParticipation do
 
   @doc false
   def changeset_cast(participation, attrs) do
-    participation
-    |> cast(attrs, [:id, :role, :project_id, :user_id, :vote_user_id])
+    changeset =
+      participation
+      |> cast(attrs, [:id, :role, :project_id, :user_id, :vote_user_id])
+
+    if Ecto.assoc_loaded?(attrs.user) do
+      put_assoc(changeset, :user, attrs.user)
+    else
+      changeset
+    end
   end
 
   defp validate_role(changeset) do

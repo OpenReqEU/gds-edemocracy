@@ -40,7 +40,7 @@
           <a href="<%= ticket.url %>"><%= ticket.title %></a>
         </td>
       </tr>
-    <% end %>
+      <% end %>
     </tbody>
   </table>
 </div>
