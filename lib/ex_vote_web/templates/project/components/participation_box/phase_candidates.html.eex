@@ -1,7 +1,6 @@
 <%= case project_user_participation_role(@project, @user) do %>
   <% "user" -> %>
   <p> Thank you for your participation in this project. Now the candidate you voted for has the opportunity to vote on tickets</p>
-  <p> TODO: Candidate voting stats</p>
   <% "candidate" -> %>
     <h3 class="title">Vote for tickets:</h3>
     <table class="table is-fullwidth">
