@@ -1,0 +1,14 @@
+<h2 class="title has-text-centered">Participate</h2>
+<div class="box">
+  <%= if @user do %>
+
+    <%= @inner_template %>
+
+  <% else %>
+
+    <p class="has-text-centered">
+      Please <a href="<%= user_path(@conn, :login) %>">login</a> if you wish to participate in in this project.
+    </p>
+
+  <% end %>
+</div>

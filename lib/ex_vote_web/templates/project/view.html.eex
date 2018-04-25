@@ -1,4 +1,4 @@
-<%= render(ExVoteWeb.ProjectView, "phase_info_box.html", assigns) %>
+<%= render "components/info_box.html", assigns %>
 
 <hr />
 <div class="box">
@@ -34,16 +34,16 @@
       </tr>
     </thead>
     <tbody>
-      <%= Enum.map(@project.tickets, fn(ticket) -> %>
+      <%= for ticket <- @project.tickets do %>
       <tr>
         <td>
           <a href="<%= ticket.url %>"><%= ticket.title %></a>
         </td>
       </tr>
-    <% end) %>
+    <% end %>
     </tbody>
   </table>
 </div>
 <hr />
 
-<%= render(ExVoteWeb.ProjectView, "participation_box.html", assigns) %>
+<%= render "components/participation_box.html", assigns %>

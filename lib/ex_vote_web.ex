@@ -29,6 +29,7 @@ defmodule ExVoteWeb do
   def view do
     quote do
       use Phoenix.View, root: "lib/ex_vote_web/templates",
+                        pattern: "**/*",
                         namespace: ExVoteWeb
 
       # Import convenience functions from controllers

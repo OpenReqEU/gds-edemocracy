@@ -1,5 +1,10 @@
-<%= case @project.current_phase do %>
-  <% :phase_users -> %>
+<%= case project_user_participation_role(@project, @user) do %>
+  <% "user" -> %>
+  user
+  <% "candidate" -> %>
+  candidate
+
+  <% nil -> %>
     <div class="level">
       <div class="level-item has-text-centered">
         <div>
@@ -32,9 +37,4 @@
         </div>
       </div>
     </div>
-  <% :phase_candidates -> %>
-    candidates
-  <% :phase_end -> %>
-    end
-
 <% end %>

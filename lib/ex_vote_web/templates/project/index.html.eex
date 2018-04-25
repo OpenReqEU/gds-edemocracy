@@ -1,4 +1,4 @@
-<%= Enum.map(@projects, fn(project) -> %>
+<%= for project <- @projects do %>
   <div class="box">
     <a href="<%= project_path(@conn, :view, project.id) %>">
       <%= project.title %>
@@ -15,4 +15,4 @@
       <%= phase_name(project.current_phase) %>
     </span>
   </div>
-<% end) %>
+<% end %>

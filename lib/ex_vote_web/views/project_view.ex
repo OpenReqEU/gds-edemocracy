@@ -1,6 +1,44 @@
 defmodule ExVoteWeb.ProjectView do
   use ExVoteWeb, :view
 
+  # Overridden render functions
+
+  def render("components/info_box.html", assigns) do
+
+    rendered =
+      case assigns.project.current_phase do
+        :phase_users ->
+          render("components/info_box/phase_users.html", assigns)
+        :phase_candidates ->
+          render("components/info_box/phase_candidates.html", assigns)
+        :phase_end ->
+          render("components/info_box/phase_end.html", assigns)
+      end
+
+    assigns = Map.put(assigns, :inner_template, rendered)
+
+    render("components/_info_box.html", assigns)
+  end
+
+  def render("components/participation_box.html", assigns) do
+
+    rendered =
+      case assigns.project.current_phase do
+        :phase_users ->
+          render("components/participation_box/phase_users.html", assigns)
+        :phase_candidates ->
+          render("components/participation_box/phase_candidates.html", assigns)
+        :phase_end ->
+          render("components/participation_box/phase_end.html", assigns)
+      end
+
+    assigns = Map.put(assigns, :inner_template, rendered)
+
+    render("components/_participation_box.html", assigns)
+  end
+
+  # Template helpers
+
   def format_date(date) do
     Timex.format!(date, "{relative}", :relative)
   end
@@ -24,4 +62,5 @@ defmodule ExVoteWeb.ProjectView do
       participation.user_id == user_id && participation.role
     end)
   end
+
 end
