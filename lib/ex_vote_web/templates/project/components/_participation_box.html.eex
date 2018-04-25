@@ -2,7 +2,7 @@
 <div class="box">
   <%= if @user do %>
 
-    <%= @inner_template %>
+    <%= render @inner_template_path, assigns %>
 
   <% else %>
 

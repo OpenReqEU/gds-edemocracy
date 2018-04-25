@@ -76,4 +76,17 @@ defmodule ExVoteWeb.ProjectController do
         |> redirect(to: "/")
     end
   end
+
+  def add_candidate_vote(conn, %{"candidate_participation" => participation}) do
+    case Projects.add_candidate_vote(participation) do
+      {:ok, participation} ->
+        conn
+        |> put_flash(:info, "Your vote has been received!")
+        |> redirect(to: project_path(conn, :view, participation.project_id))
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "Failed to update vote")
+        |> redirect(to: "/")
+    end
+  end
 end

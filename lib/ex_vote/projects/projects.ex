@@ -90,13 +90,13 @@ defmodule ExVote.Projects do
     |> Participations.create_participation()
   end
 
-  def add_user_vote(%Project{} = project, %User{} = user, %User{} = candidate) do
-    # TODO: expose some kind of function to fetch multiple records at once
-    user_participation = Participations.get_participation(project, user, "user")
-    candidate_participation = Participations.get_participation(project, candidate, "candidate")
+  # def add_user_vote(%Project{} = project, %User{} = user, %User{} = candidate) do
+  #   # TODO: expose some kind of function to fetch multiple records at once
+  #   user_participation = Participations.get_participation(project, user, "user")
+  #   candidate_participation = Participations.get_participation(project, candidate, "candidate")
 
-    handle_user_vote(user_participation, candidate_participation)
-  end
+  #   handle_user_vote(user_participation, candidate_participation)
+  # end
 
   def add_user_vote(attrs \\ %{}) do
     # TODO: handle error cases (candidate not in project, see add_user_vote/2)
@@ -104,19 +104,19 @@ defmodule ExVote.Projects do
     |> Participations.update_vote(attrs)
   end
 
-  defp handle_user_vote(nil, _), do: {:error, "Invalid user"}
-  defp handle_user_vote(_, nil), do: {:error, "Invalid vote"}
+  # defp handle_user_vote(nil, _), do: {:error, "Invalid user"}
+  # defp handle_user_vote(_, nil), do: {:error, "Invalid vote"}
 
-  defp handle_user_vote(
-    %UserParticipation{} = user_participation,
-    %CandidateParticipation{:user_id => candidate_id}
-  ) do
-    vote = %{
-      vote_user_id: candidate_id
-    }
+  # defp handle_user_vote(
+  #   %UserParticipation{} = user_participation,
+  #   %CandidateParticipation{:user_id => candidate_id}
+  # ) do
+  #   vote = %{
+  #     vote_user_id: candidate_id
+  #   }
 
-    Participations.update_vote(user_participation, vote)
-  end
+  #   Participations.update_vote(user_participation, vote)
+  # end
 
   def add_candidate_vote(%Project{} = project, %User{} = user, %Ticket{} = ticket) do
     candidate_participation = Participations.get_participation(project, user, "candidate")
@@ -127,6 +127,12 @@ defmodule ExVote.Projects do
     |> Enum.any?(fn(%Ticket{:id => id}) -> id == ticket.id end)
 
     handle_candidate_vote(candidate_participation, ticket, valid_ticket?)
+  end
+
+  def add_candidate_vote(attrs \\ %{}) do
+    # TODO: handle error cases (candidate not in project, see add_candidate_vote/2)
+    Participations.get_participation(%{id: Map.get(attrs, "project_id")}, %{id: Map.get(attrs, "user_id")})
+    |> Participations.update_vote(attrs)
   end
 
   defp handle_candidate_vote(nil, _, _), do: {:error, "Invalid user"}

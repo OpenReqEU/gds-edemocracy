@@ -1,1 +1,42 @@
-candidate
+<%= case project_user_participation_role(@project, @user) do %>
+  <% "user" -> %>
+  <p> Thank you for your participation in this project. Now the candidate you voted for has the opportunity to vote on tickets</p>
+  <p> TODO: Candidate voting stats</p>
+  <% "candidate" -> %>
+    <h3 class="title">Vote for tickets:</h3>
+    <table class="table is-fullwidth">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th class="has-text-centered">Vote</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for ticket <- @project.tickets do %>
+          <tr>
+            <td style="width: 100%;">
+              <a href="<%= ticket.url %>"><%= ticket.title %></a>
+            </td>
+            <td>
+            <%= if get_project_user_participation(@project, @user).vote_candidate_id == ticket.id do %>
+              <div class="field">
+                <button class="button" disabled>Vote</button>
+              </div>
+            <% else %>
+              <%= form_for changeset_add_candidate_vote(), project_path(@conn, :add_candidate_vote), fn f -> %>
+                <%= hidden_input f, :project_id, value: @project.id %>
+                <%= hidden_input f, :user_id, value: @user.id %>
+                <%= hidden_input f, :vote_candidate_id, value: ticket.id %>
+                <div class="field">
+                  <%= submit "Vote", class: "button is-success" %>
+                </div>
+              <% end %>
+            <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% nil -> %>
+    <p>Sorry, the registration for this project has been closed</p>
+<% end %>

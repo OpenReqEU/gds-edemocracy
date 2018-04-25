@@ -6,35 +6,15 @@ defmodule ExVoteWeb.ProjectView do
   # Overridden render functions
 
   def render("components/info_box.html", assigns) do
-
-    rendered =
-      case assigns.project.current_phase do
-        :phase_users ->
-          render("components/info_box/phase_users.html", assigns)
-        :phase_candidates ->
-          render("components/info_box/phase_candidates.html", assigns)
-        :phase_end ->
-          render("components/info_box/phase_end.html", assigns)
-      end
-
-    assigns = Map.put(assigns, :inner_template, rendered)
+    template_path = "components/info_box/#{Atom.to_string(assigns.project.current_phase)}.html"
+    assigns = Map.put(assigns, :inner_template_path, template_path)
 
     render("components/_info_box.html", assigns)
   end
 
   def render("components/participation_box.html", assigns) do
-
-    rendered =
-      case assigns.project.current_phase do
-        :phase_users ->
-          render("components/participation_box/phase_users.html", assigns)
-        :phase_candidates ->
-          render("components/participation_box/phase_candidates.html", assigns)
-        :phase_end ->
-          render("components/participation_box/phase_end.html", assigns)
-      end
-
-    assigns = Map.put(assigns, :inner_template, rendered)
+    template_path = "components/participation_box/#{Atom.to_string(assigns.project.current_phase)}.html"
+    assigns = Map.put(assigns, :inner_template_path, template_path)
 
     render("components/_participation_box.html", assigns)
   end
@@ -71,10 +51,18 @@ defmodule ExVoteWeb.ProjectView do
     Participations.UserParticipation.changeset_update_vote(%Participations.UserParticipation{}, %{})
   end
 
+  def changeset_add_candidate_vote do
+    Participations.CandidateParticipation.changeset_update_vote(%Participations.CandidateParticipation{}, %{})
+  end
+
   def project_user_participation_role(%{:participations => participations}, %{:id => user_id}) do
     Enum.find_value(participations, fn(participation) ->
       participation.user_id == user_id && participation.role
     end)
+  end
+
+  def get_project_user_participation(%{:participations => participations}, %{:id => user_id}) do
+    Enum.find(participations, &(&1.user_id == user_id))
   end
 
   def get_candidates(project) do
