@@ -12,7 +12,7 @@ defmodule ExVoteWeb.UserController do
     |> render("login.html")
   end
 
-  def login(conn, %{"user" => user} = params) do
+  def login(conn, %{"user" => user}) do
     case ExVote.Accounts.login(user) do
       {:ok, user} ->
         conn

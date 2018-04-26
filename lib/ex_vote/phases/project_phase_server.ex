@@ -1,8 +1,8 @@
 defmodule ExVote.Phases.ProjectPhaseServer do
   use GenServer, restart: :transient
 
+  require Logger
   import Ecto.Query
-  import Logger
 
   alias ExVote.Repo
   alias ExVote.Projects.Project

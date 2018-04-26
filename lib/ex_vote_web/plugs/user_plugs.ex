@@ -1,6 +1,6 @@
 defmodule ExVoteWeb.Plugs.UserPlugs do
+  require Logger
   import Plug.Conn
-  import Logger
 
   def fetch_user(conn, _) do
     case get_session(conn, :user) do

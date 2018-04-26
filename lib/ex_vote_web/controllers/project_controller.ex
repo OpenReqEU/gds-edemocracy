@@ -2,7 +2,6 @@ defmodule ExVoteWeb.ProjectController do
   use ExVoteWeb, :controller
 
   alias ExVote.Projects
-  alias ExVote.Participations
 
   def index(conn, _params) do
     projects = Projects.list_projects()
@@ -14,10 +13,6 @@ defmodule ExVoteWeb.ProjectController do
 
   def view(conn, %{"id" => project_id}) do
     project = Projects.get_project(project_id, [:participations, :tickets])
-    create_user_changeset =
-      Participations.UserParticipation.changeset_create(%Participations.UserParticipation{}, %{})
-    create_candidate_changeset =
-      Participations.CandidateParticipation.changeset_create(%Participations.CandidateParticipation{}, %{})
 
     conn
     |> assign(:project, project)
@@ -70,7 +65,7 @@ defmodule ExVoteWeb.ProjectController do
         conn
         |> put_flash(:info, "Your vote has been received!")
         |> redirect(to: project_path(conn, :view, participation.project_id))
-      {:error, changeset} ->
+      {:error, _changeset} ->
         conn
         |> put_flash(:error, "Failed to update vote")
         |> redirect(to: "/")
@@ -83,7 +78,7 @@ defmodule ExVoteWeb.ProjectController do
         conn
         |> put_flash(:info, "Your vote has been received!")
         |> redirect(to: project_path(conn, :view, participation.project_id))
-      {:error, changeset} ->
+      {:error, _changeset} ->
         conn
         |> put_flash(:error, "Failed to update vote")
         |> redirect(to: "/")

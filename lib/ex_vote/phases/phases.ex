@@ -1,5 +1,5 @@
 defmodule ExVote.Phases do
-  import Logger
+  require Logger
 
   alias ExVote.Phases.ProjectPhaseServer
   alias ExVote.Projects.Project

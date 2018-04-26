@@ -1,8 +1,8 @@
 defmodule ExVote.Projects.Project do
   use Ecto.Schema
 
+  require Logger
   import Ecto.Changeset
-  import Logger
   import NaiveDateTime
 
   alias ExVote.Participations.Participation

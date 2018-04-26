@@ -3,10 +3,9 @@ defmodule ExVote.Projects do
 
   alias ExVote.Repo
   alias ExVote.Phases
-  alias ExVote.Projects.{Project, Ticket}
+  alias ExVote.Projects.Project
   alias ExVote.Accounts.User
   alias ExVote.Participations
-  alias ExVote.Participations.{UserParticipation, CandidateParticipation}
 
   def list_projects do
     Project
@@ -118,16 +117,16 @@ defmodule ExVote.Projects do
   #   Participations.update_vote(user_participation, vote)
   # end
 
-  def add_candidate_vote(%Project{} = project, %User{} = user, %Ticket{} = ticket) do
-    candidate_participation = Participations.get_participation(project, user, "candidate")
+  # def add_candidate_vote(%Project{} = project, %User{} = user, %Ticket{} = ticket) do
+  #   candidate_participation = Participations.get_participation(project, user, "candidate")
 
-    valid_ticket? = project
-    |> Repo.preload(:tickets)
-    |> Map.get(:tickets)
-    |> Enum.any?(fn(%Ticket{:id => id}) -> id == ticket.id end)
+  #   valid_ticket? = project
+  #   |> Repo.preload(:tickets)
+  #   |> Map.get(:tickets)
+  #   |> Enum.any?(fn(%Ticket{:id => id}) -> id == ticket.id end)
 
-    handle_candidate_vote(candidate_participation, ticket, valid_ticket?)
-  end
+  #   handle_candidate_vote(candidate_participation, ticket, valid_ticket?)
+  # end
 
   def add_candidate_vote(attrs \\ %{}) do
     # TODO: handle error cases (candidate not in project, see add_candidate_vote/2)
@@ -135,21 +134,21 @@ defmodule ExVote.Projects do
     |> Participations.update_vote(attrs)
   end
 
-  defp handle_candidate_vote(nil, _, _), do: {:error, "Invalid user"}
-  defp handle_candidate_vote(_, nil, _), do: {:error, "Invalid vote"}
-  defp handle_candidate_vote(_, _, false), do: {:error, "Invalid vote"}
+  # defp handle_candidate_vote(nil, _, _), do: {:error, "Invalid user"}
+  # defp handle_candidate_vote(_, nil, _), do: {:error, "Invalid vote"}
+  # defp handle_candidate_vote(_, _, false), do: {:error, "Invalid vote"}
 
-  defp handle_candidate_vote(
-    %CandidateParticipation{} = candidate,
-    %Ticket{:id => ticket_id},
-    true
-  ) do
-    vote = %{
-      vote_candidate_id: ticket_id
-    }
+  # defp handle_candidate_vote(
+  #   %CandidateParticipation{} = candidate,
+  #   %Ticket{:id => ticket_id},
+  #   true
+  # ) do
+  #   vote = %{
+  #     vote_candidate_id: ticket_id
+  #   }
 
-    Participations.update_vote(candidate, vote)
-  end
+  #   Participations.update_vote(candidate, vote)
+  # end
 
   # @moduledoc """
   # The Projects context.

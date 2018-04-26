@@ -8,7 +8,6 @@ defmodule ExVote.Participations do
     CandidateParticipation
   }
   alias ExVote.Projects.Project
-  alias ExVote.Accounts.User
 
   def get_participations(%Project{:id => project_id}, role_filter \\ nil) do
     query = from p in Participation,
