@@ -7,7 +7,7 @@ defmodule ExVote.Mixfile do
       version: "0.0.1",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
+      compilers: [:phoenix, :gettext, :phoenix_swagger] ++ Mix.compilers,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
       deps: deps()
@@ -20,7 +20,7 @@ defmodule ExVote.Mixfile do
   def application do
     [
       mod: {ExVote.Application, []},
-      extra_applications: [:logger, :runtime_tools, :timex]
+      extra_applications: [:phoenix, :logger, :runtime_tools, :timex, :phoenix_swagger]
     ]
   end
 
@@ -41,7 +41,8 @@ defmodule ExVote.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:timex, "~> 3.1"}
+      {:timex, "~> 3.1"},
+      {:phoenix_swagger, "~> 0.8"}
     ]
   end
 
