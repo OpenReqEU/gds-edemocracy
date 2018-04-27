@@ -32,21 +32,23 @@ defmodule ExVoteWeb.Router do
     get "/users/logout", UserController, :logout
   end
 
+  scope "/api", ExVoteWeb do
+    pipe_through :api
+
+    resources "/projects", ApiController, only: [:show]
+  end
+
   scope "/api/swagger" do
     forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :ex_vote, swagger_file: "swagger.json"
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", ExVoteWeb do
-  #   pipe_through :api
-  # end
 
   def swagger_info do
     %{
       info: %{
         version: "1.0",
         title: "ExVote API"
-      }
+      },
+      basePath: "/api"
     }
   end
 end
