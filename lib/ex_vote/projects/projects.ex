@@ -27,7 +27,7 @@ defmodule ExVote.Projects do
       Repo.one(query_with_assocs)
       |> Project.compute_phase()
 
-    if is_list(Map.get(result, :participations)) do
+    if result && is_list(Map.get(result, :participations)) do
       casted_participations = Enum.map(result.participations, &Participations.cast_participation/1)
       %{result | participations: casted_participations}
     else

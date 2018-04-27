@@ -30,6 +30,8 @@ defmodule ExVote.Projects.Project do
     |> cast_assoc(:tickets, with: &Ticket.changeset_create/2)
   end
 
+  def compute_phase(nil, _), do: nil
+
   def compute_phase(%Project{} = project, now \\ NaiveDateTime.utc_now()) do
     %{:phase_candidates => phase_candidates, :phase_end => phase_end} = project
 
