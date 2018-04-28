@@ -3,15 +3,16 @@ defmodule ExVote.Participations.CandidateParticipation do
 
   import Ecto.Changeset
 
-  alias ExVote.Projects.{Project, Ticket}
-  alias ExVote.Accounts.User
+  alias ExVote.Projects
+  alias ExVote.Accounts
+  alias ExVote.Participations
 
   schema "participations" do
     field :role, :string
     field :candidate_summary
-    belongs_to :project, Project
-    belongs_to :user, User
-    belongs_to :vote_candidate, Ticket
+    belongs_to :project, Projects.Project
+    belongs_to :user, Accounts.User
+    has_many :votes_candidate, Participations.ParticipationTicket, foreign_key: :participation_id
   end
 
   @doc false
@@ -26,19 +27,10 @@ defmodule ExVote.Participations.CandidateParticipation do
   end
 
   @doc false
-  def changeset_update_vote(participation, attrs) do
-    participation
-    |> cast(attrs, [:role, :vote_candidate_id])
-    |> validate_required([:vote_candidate_id])
-    |> validate_role()
-    |> assoc_constraint(:vote_candidate)
-  end
-
-  @doc false
   def changeset_cast(participation, attrs) do
     changeset =
       participation
-      |> cast(attrs, [:id, :role, :candidate_summary, :project_id, :user_id, :vote_candidate_id])
+      |> cast(attrs, [:id, :role, :candidate_summary, :project_id, :user_id])
 
     if Ecto.assoc_loaded?(attrs.user) do
       put_assoc(changeset, :user, attrs.user)

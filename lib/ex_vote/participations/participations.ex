@@ -5,7 +5,8 @@ defmodule ExVote.Participations do
   alias ExVote.Participations.{
     Participation,
     UserParticipation,
-    CandidateParticipation
+    CandidateParticipation,
+    ParticipationTicket
   }
   alias ExVote.Projects.Project
 
@@ -73,9 +74,22 @@ defmodule ExVote.Participations do
     |> Repo.update()
   end
 
-  def update_vote(%CandidateParticipation{} = participation, attrs) do
-    participation
-    |> CandidateParticipation.changeset_update_vote(attrs)
-    |> Repo.update()
+  def get_candidate_votes(%CandidateParticipation{:id => participation_id}) do
+    query = from pt in ParticipationTicket,
+      where: pt.participation_id == ^participation_id,
+      left_join: t in assoc(pt, :ticket)
+
+    query
+    |> Repo.all()
+  end
+
+  def add_candidate_vote(attrs \\ %{}) do
+    %ParticipationTicket{}
+    |> ParticipationTicket.changeset_create(attrs)
+    |> Repo.insert()
+  end
+
+  def delete_candidate_vote(id) do
+    Repo.delete(%ParticipationTicket{id: id})
   end
 end

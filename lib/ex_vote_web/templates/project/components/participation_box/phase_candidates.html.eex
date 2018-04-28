@@ -1,7 +1,7 @@
-<%= case project_user_participation_role(@project, @user) do %>
-  <% "user" -> %>
+<%= case @participation do %>
+  <% %{:role => "user"} -> %>
   <p> Thank you for your participation in this project. Now the candidate you voted for has the opportunity to vote on tickets</p>
-  <% "candidate" -> %>
+  <% %{:role => "candidate"} -> %>
     <h3 class="title">Vote for tickets:</h3>
     <table class="table is-fullwidth">
       <thead>
@@ -11,23 +11,38 @@
         </tr>
       </thead>
       <tbody>
+        <% votes = get_candidate_votes(@participation) %>
         <%= for ticket <- @project.tickets do %>
           <tr>
             <td style="width: 100%;">
               <a href="<%= ticket.url %>"><%= ticket.title %></a>
             </td>
             <td>
-            <%= if get_project_user_participation(@project, @user).vote_candidate_id == ticket.id do %>
-              <div class="field">
-                <button class="button" disabled>Vote</button>
-              </div>
+            <%= if vote = Enum.find(votes, fn (vote) -> vote.ticket_id == ticket.id end) do %>
+              <%= form_for @conn, project_path(@conn, :delete_candidate_vote), fn f -> %>
+                <%= hidden_input f, :participation_ticket_id, value: vote.id %>
+                <%= hidden_input f, :project_id, value: @project.id %>
+                <div class="field is-pulled-right">
+                  <button class="button is-danger is-outlined" type="submit">
+                    <span class="icon is-small">
+                      <i class="fas fa-times"></i>
+                    </span>
+                    <span>Remove vote</span>
+                  </button>
+                </div>
+              <% end %>
             <% else %>
               <%= form_for changeset_add_candidate_vote(), project_path(@conn, :add_candidate_vote), fn f -> %>
+                <%= hidden_input f, :participation_id, value: @participation.id %>
+                <%= hidden_input f, :ticket_id, value: ticket.id %>
                 <%= hidden_input f, :project_id, value: @project.id %>
-                <%= hidden_input f, :user_id, value: @user.id %>
-                <%= hidden_input f, :vote_candidate_id, value: ticket.id %>
-                <div class="field">
-                  <%= submit "Vote", class: "button is-success" %>
+                <div class="field is-pulled-right">
+                  <button class="button is-success is-outlined" type="submit">
+                    <span class="icon is-small">
+                      <i class="fas fa-check"></i>
+                    </span>
+                    <span>Add vote</span>
+                  </button>
                 </div>
               <% end %>
             <% end %>

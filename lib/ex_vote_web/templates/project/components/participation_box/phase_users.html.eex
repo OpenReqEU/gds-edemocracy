@@ -1,5 +1,5 @@
-<%= case project_user_participation_role(@project, @user) do %>
-  <% "user" -> %>
+<%= case @participation do %>
+  <% %{:role => "user"} -> %>
     <%= if project_user_has_voted?(@project, @user) do %>
       <h3 class="subtitle">Thank you for voting</h3>
     <% else %>
@@ -25,7 +25,7 @@
         <br />
       <% end %>
     <% end %>
-  <% "candidate" -> %>
+  <% %{:role => "candidate"} -> %>
     <p>Thank you for registering as a candidate! You may vote for tickets once the next phase begins.</p>
 
   <% nil -> %>

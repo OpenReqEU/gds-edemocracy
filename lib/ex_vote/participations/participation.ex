@@ -1,15 +1,16 @@
 defmodule ExVote.Participations.Participation do
   use Ecto.Schema
 
-  alias ExVote.Projects.{Project, Ticket}
-  alias ExVote.Accounts.User
+  alias ExVote.Projects
+  alias ExVote.Accounts
+  alias ExVote.Participations
 
   schema "participations" do
     field :role, :string
     field :candidate_summary, :string
-    belongs_to :project, Project
-    belongs_to :user, User
-    belongs_to :vote_user, User
-    belongs_to :vote_candidate, Ticket
+    belongs_to :project, Projects.Project
+    belongs_to :user, Accounts.User
+    belongs_to :vote_user, Accounts.User
+    has_many :votes_candidate, Participations.ParticipationTicket
   end
 end

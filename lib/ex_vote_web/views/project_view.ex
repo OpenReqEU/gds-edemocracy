@@ -52,21 +52,15 @@ defmodule ExVoteWeb.ProjectView do
   end
 
   def changeset_add_candidate_vote do
-    Participations.CandidateParticipation.changeset_update_vote(%Participations.CandidateParticipation{}, %{})
-  end
-
-  def project_user_participation_role(%{:participations => participations}, %{:id => user_id}) do
-    Enum.find_value(participations, fn(participation) ->
-      participation.user_id == user_id && participation.role
-    end)
-  end
-
-  def get_project_user_participation(%{:participations => participations}, %{:id => user_id}) do
-    Enum.find(participations, &(&1.user_id == user_id))
+    Participations.ParticipationTicket.changeset_create(%Participations.ParticipationTicket{}, %{})
   end
 
   def get_candidates(project) do
-    ExVote.Participations.get_participations(project, "candidate")
+    Participations.get_participations(project, "candidate")
+  end
+
+  def get_candidate_votes(participation) do
+    Participations.get_candidate_votes(participation)
   end
 
   def project_user_has_voted?(%{:participations => participations}, %{:id => user_id}) do

@@ -1,4 +1,5 @@
 defmodule ExVote.Projects do
+
   import Ecto.Query
 
   alias ExVote.Repo
@@ -130,8 +131,13 @@ defmodule ExVote.Projects do
 
   def add_candidate_vote(attrs \\ %{}) do
     # TODO: handle error cases (candidate not in project, see add_candidate_vote/2)
-    Participations.get_participation(%{id: Map.get(attrs, "project_id")}, %{id: Map.get(attrs, "user_id")})
-    |> Participations.update_vote(attrs)
+    # Participations.get_participation(%{id: Map.get(attrs, "project_id")}, %{id: Map.get(attrs, "user_id")})
+    attrs
+    |> Participations.add_candidate_vote()
+  end
+
+  def delete_candidate_vote(participation_ticket_id) do
+    Participations.delete_candidate_vote(participation_ticket_id)
   end
 
   # defp handle_candidate_vote(nil, _, _), do: {:error, "Invalid user"}
