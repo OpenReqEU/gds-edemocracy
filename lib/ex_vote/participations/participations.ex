@@ -56,13 +56,21 @@ defmodule ExVote.Participations do
     |> Ecto.Changeset.apply_changes()
   end
 
-  def create_participation(%{"role" => "user"} = attrs) do
+  def create_participation(attrs) do
+    %Participation{}
+    |> Participation.changeset_create(attrs)
+    |> Ecto.Changeset.apply_changes()
+    |> Map.from_struct()
+    |> create_typed_participation()
+  end
+
+  def create_typed_participation(%{:role => "user"} = attrs) do
     %UserParticipation{}
     |> UserParticipation.changeset_create(attrs)
     |> Repo.insert()
   end
 
-  def create_participation(%{"role" => "candidate"} = attrs) do
+  def create_typed_participation(%{:role => "candidate"} = attrs) do
     %CandidateParticipation{}
     |> CandidateParticipation.changeset_create(attrs)
     |> Repo.insert()
