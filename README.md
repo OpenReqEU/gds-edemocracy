@@ -1,19 +1,43 @@
 # ExVote
 
-To start your Phoenix server:
+**This is an early prototype!**
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Start Phoenix endpoint with `mix phx.server`
+## Installation
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Prerequisites:
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+  * Docker
+  * Docker Compose
 
-## Learn more
+Download or clone this repository, change into its directory and build the image by running
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+```
+docker-compose build
+```
+
+Once this process finishes you can now start the application via
+
+```
+docker-compose up
+```
+
+Navigate to http://localhost:4000 to view the application.
+
+## API
+
+The API is documented via the OpenAPI specification. There is a Swagger webinterface included at http://localhost:4000/api/swagger
+
+## Seeded Data
+
+By default, the application gets seeded with random projects, tickets and users.
+There are three special accounts, which always get created:
+
+  * Username: "guest"
+
+    This account has no participation in any project.
+  * Username: "user"
+
+    This accounts has a participation of role "user" in every project.
+  * Username: "candidate"
+
+    See above only with the role "candidate"
