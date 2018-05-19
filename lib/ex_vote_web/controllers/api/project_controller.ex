@@ -1,4 +1,4 @@
-defmodule ExVoteWeb.ApiController do
+defmodule ExVoteWeb.Api.ProjectController do
   use ExVoteWeb, :controller
   use PhoenixSwagger
 

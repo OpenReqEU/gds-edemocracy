@@ -36,7 +36,7 @@ defmodule ExVoteWeb.Router do
   scope "/api", ExVoteWeb do
     pipe_through :api
 
-    resources "/projects", ApiController, only: [:show, :create]
+    resources "/projects", Api.ProjectController, only: [:show, :create]
   end
 
   scope "/api/swagger" do

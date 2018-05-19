@@ -1,4 +1,4 @@
-defmodule ExVoteWeb.ApiView do
+defmodule ExVoteWeb.Api.ProjectView do
   use ExVoteWeb, :view
 
   def render("show.json", %{:project => project}) do
