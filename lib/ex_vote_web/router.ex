@@ -16,6 +16,10 @@ defmodule ExVoteWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug :ensure_token
+  end
+
   scope "/", ExVoteWeb do
     pipe_through :browser # Use the default browser stack
 
@@ -36,7 +40,19 @@ defmodule ExVoteWeb.Router do
   scope "/api", ExVoteWeb do
     pipe_through :api
 
-    resources "/projects", Api.ProjectController, only: [:show, :create]
+    scope "/users" do
+      post "/login", Api.UserController, :login
+
+      scope "/" do
+        pipe_through :api_auth
+
+        get "/token_test", Api.UserController, :token_test
+      end
+    end
+
+    scope "/projects" do
+      resources "/", Api.ProjectController, only: [:show, :create]
+    end
   end
 
   scope "/api/swagger" do
@@ -49,6 +65,17 @@ defmodule ExVoteWeb.Router do
         version: "1.0",
         title: "ExVote API"
       },
+      securityDefinitions: %{
+        ApiKey: %{
+          type: "apiKey",
+          name: "Authorization",
+          in: "header",
+          description: "Token for Api operations"
+        }
+      },
+      security: [
+        %{ApiKey: []}
+      ],
       basePath: "/api"
     }
   end
