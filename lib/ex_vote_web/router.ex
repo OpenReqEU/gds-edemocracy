@@ -52,6 +52,12 @@ defmodule ExVoteWeb.Router do
 
     scope "/projects" do
       resources "/", Api.ProjectController, only: [:show, :create]
+
+      scope "/" do
+        pipe_through :api_auth
+
+        post "/:id/join", Api.ProjectController, :join
+      end
     end
   end
 

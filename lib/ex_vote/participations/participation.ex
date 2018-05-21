@@ -7,6 +7,8 @@ defmodule ExVote.Participations.Participation do
   alias ExVote.Accounts
   alias ExVote.Participations
 
+  @valid_roles ~w(user candidate)
+
   schema "participations" do
     field :role, :string
     field :candidate_summary, :string
@@ -21,5 +23,16 @@ defmodule ExVote.Participations.Participation do
     participation
     |> cast(attrs, [:role, :candidate_summary, :project_id, :user_id, :vote_user_id])
     |> validate_required([:role])
+    |> validate_role()
+  end
+
+  defp validate_role(changeset) do
+    validate_change(changeset, :role, fn :role, role ->
+      if Enum.any?(@valid_roles, &(&1 == role)) do
+        []
+      else
+        [role: "unknown role"]
+      end
+    end)
   end
 end

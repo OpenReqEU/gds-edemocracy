@@ -6,6 +6,7 @@ defmodule ExVoteWeb.Api.ProjectController do
     get "/projects/{id}"
     summary "Get project informations"
     description "Returns a project"
+    security []
     parameters do
       id :path, :integer, "ID of project to return", required: true
     end
@@ -31,6 +32,7 @@ defmodule ExVoteWeb.Api.ProjectController do
     post "/projects"
     summary "Add a new project"
     description "Creates a new project\n Please note that the id fields are ignored on creation"
+    security []
     parameters do
       body :body, Schema.ref(:project), "The project", required: true
     end
@@ -44,6 +46,38 @@ defmodule ExVoteWeb.Api.ProjectController do
         conn
         |> assign(:project, project)
         |> render("show.json")
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> put_status(400)
+        |> render("error.json")
+    end
+  end
+
+  swagger_path :join do
+    post "/projects/{id}/join"
+    summary "Join a project"
+    description "Creates a Participation in the specified project with the current user (identified by Authorization token)"
+    parameters do
+      id :path, :integer, "Project id", required: true
+      body :body, Schema.ref(:participation), "The participation details", required: true
+    end
+    response 200, "OK", Schema.ref(:participation)
+    response 400, "Error"
+  end
+  def join(conn, params) do
+    user = Map.fetch!(conn.assigns, :user)
+    {project_id, params} = Map.pop(params, "id")
+    participation =
+      params
+      |> Map.put("user_id", user.id)
+      |> Map.put("project_id", project_id)
+
+    case ExVote.Participations.create_participation(participation) do
+      {:ok, participation} ->
+        conn
+        |> assign(:participation, participation)
+        |> render("join.json")
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
@@ -79,6 +113,16 @@ defmodule ExVoteWeb.Api.ProjectController do
         description "A collection of tickets"
         type :array
         items Schema.ref(:ticket)
+      end,
+      participation: swagger_schema do
+        title "Participation"
+        description "Represents a participation in a project"
+        properties do
+          project_id :number, "Project id"
+          user_id :number, "User id"
+          role :string, "Role", required: true
+          candidate_summary :string, "Summary text (only relevant for role: candidate)"
+        end
       end
     }
   end

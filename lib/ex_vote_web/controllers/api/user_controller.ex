@@ -8,6 +8,7 @@ defmodule ExVoteWeb.Api.UserController do
     post "/users/login"
     summary "User login"
     description "Returns an authentication token"
+    security []
     parameters do
       body :body, Schema.ref(:user_login), "User Login", required: true
     end
