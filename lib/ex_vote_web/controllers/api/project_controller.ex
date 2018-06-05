@@ -77,12 +77,48 @@ defmodule ExVoteWeb.Api.ProjectController do
       {:ok, participation} ->
         conn
         |> assign(:participation, participation)
-        |> render("join.json")
+        |> render("participation.json")
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
         |> put_status(400)
         |> render("error.json")
+    end
+  end
+
+  swagger_path :change_role do
+    post "/projects/{id}/changerole"
+    summary "Changes a users role"
+    description "Changes the current users role to candidate"
+    parameters do
+      id :path, :integer, "Project id", required: true
+      body :body, Schema.ref(:role), "Role information", required: true
+    end
+    response 200, "OK", Schema.ref(:participation)
+    response 400, "Error"
+  end
+  def change_role(conn, params) do
+    user = Map.fetch!(conn.assigns, :user)
+    {project_id, params} = Map.pop(params, "id")
+    role_change =
+      params
+      |> Map.put("user_id", user.id)
+      |> Map.put("project_id", project_id)
+
+    case ExVote.Projects.change_role_to_candidate(role_change) do
+      {:ok, participation} ->
+        conn
+        |> assign(:participation, participation)
+        |> render("participation.json")
+      {:error, error} when is_binary(error) ->
+        conn
+        |> json(%{error: error})
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> put_status(400)
+        |> render("error.json")
+
     end
   end
 
@@ -122,6 +158,14 @@ defmodule ExVoteWeb.Api.ProjectController do
           user_id :number, "User id"
           role :string, "Role", required: true
           candidate_summary :string, "Summary text (only relevant for role: candidate)"
+        end
+      end,
+      role: swagger_schema do
+        title "Role"
+        description "Describes a Role"
+        properties do
+          role :string, "Role", required: true
+          candidate_summary :string, "Summary text (only relevant for role: candidate)", required: true
         end
       end
     }

@@ -10,14 +10,14 @@ defmodule ExVoteWeb.Api.ProjectView do
     }
   end
 
-  def render("join.json", %{:participation => participation}) do
+  def render("participation.json", %{:participation => participation}) do
     participation_json(participation)
   end
 
   def render("error.json", %{:changeset => changeset}) do
     errors =
       changeset
-      |> Ecto.Changeset.traverse_errors(fn {msg,_opts} -> msg end)
+      |> Ecto.Changeset.traverse_errors(fn {msg, _opts} -> msg end)
 
     %{
       errors: Enum.map(errors, &error_json/1)

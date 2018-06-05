@@ -103,6 +103,37 @@ defmodule ExVote.Participations do
     |> Repo.insert()
   end
 
+  def update_participation(participation, attrs \\ %{})
+
+  def update_participation(
+    %{:role => participation_role} = participation,
+    %{"role" => role} = attrs
+  ) when participation_role != role do
+    converted_participation =
+      case participation do
+        %UserParticipation{} ->
+          struct(CandidateParticipation, Map.from_struct(participation))
+        %CandidateParticipation{} ->
+          struct(UserParticipation, Map.from_struct(participation))
+      end
+
+    do_update(converted_participation, attrs)
+  end
+
+  def update_participation(participation, attrs), do: do_update(participation, attrs)
+
+  defp do_update(%UserParticipation{} = participation, attrs) do
+    participation
+    |> UserParticipation.changeset_update(attrs)
+    |> Repo.update()
+  end
+
+  defp do_update(%CandidateParticipation{} = participation, attrs) do
+    participation
+    |> CandidateParticipation.changeset_update(attrs)
+    |> Repo.update()
+  end
+
   def delete_candidate_vote(id) do
     Repo.delete(%ParticipationTicket{id: id})
   end

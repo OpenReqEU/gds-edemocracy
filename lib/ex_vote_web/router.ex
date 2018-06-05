@@ -37,7 +37,7 @@ defmodule ExVoteWeb.Router do
     get "/users/logout", UserController, :logout
   end
 
-  scope "/api", ExVoteWeb do
+  scope "/api", ExVoteWeb, as: :api do
     pipe_through :api
 
     scope "/users" do
@@ -57,6 +57,7 @@ defmodule ExVoteWeb.Router do
         pipe_through :api_auth
 
         post "/:id/join", Api.ProjectController, :join
+        post "/:id/changerole", Api.ProjectController, :change_role
       end
     end
   end
