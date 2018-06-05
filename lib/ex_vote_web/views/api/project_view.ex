@@ -1,6 +1,10 @@
 defmodule ExVoteWeb.Api.ProjectView do
   use ExVoteWeb, :view
 
+  def render("index.json", %{:projects => projects}) do
+    Enum.map(projects, &short_project_json/1)
+  end
+
   def render("show.json", %{:project => project}) do
     %{
       title: project.title,
@@ -21,6 +25,14 @@ defmodule ExVoteWeb.Api.ProjectView do
 
     %{
       errors: Enum.map(errors, &error_json/1)
+    }
+  end
+
+  defp short_project_json(%ExVote.Projects.Project{} = project) do
+    %{
+      id: project.id,
+      title: project.title,
+      current_phase: project.current_phase
     }
   end
 

@@ -2,6 +2,19 @@ defmodule ExVoteWeb.Api.ProjectController do
   use ExVoteWeb, :controller
   use PhoenixSwagger
 
+  swagger_path :index do
+    get "/projects"
+    summary "All projects"
+    description "Lists all projects"
+    security []
+    response 200, "OK", Schema.ref(:project_list)
+  end
+  def index(conn, _params) do
+    conn
+    |> assign(:projects, ExVote.Projects.list_projects)
+    |> render("index.json")
+  end
+
   swagger_path :show do
     get "/projects/{id}"
     summary "Get project informations"
@@ -13,7 +26,6 @@ defmodule ExVoteWeb.Api.ProjectController do
     response 200, "OK", Schema.ref(:project)
     response 404, "Not found"
   end
-
   def show(conn, %{"id" => project_id}) do
     project = ExVote.Projects.get_project(project_id, [:tickets])
 
@@ -134,6 +146,21 @@ defmodule ExVoteWeb.Api.ProjectController do
           phase_end :string, "End of the projects lifetime", required: true, format: "date-time"
           tickets Schema.ref(:tickets)
         end
+      end,
+      short_project: swagger_schema do
+        title "Short project"
+        description "A short overview of a project"
+        properties do
+          id :number, "Project id", required: true
+          title :string, "Project title", required: true
+          current_phase :string, "Current Phase", required: true
+        end
+      end,
+      project_list: swagger_schema do
+        title "Project list"
+        description "A collection of projects"
+        type :array
+        items Schema.ref(:short_project)
       end,
       ticket: swagger_schema do
         title "Ticket"
