@@ -167,6 +167,37 @@ defmodule ExVote.Seeder do
     end
   end
 
+  def create_proposal_projects do
+    projects =
+      for stage <- 1..3 do
+        {candidates_offset, end_offset} = Enum.at(@phase_time_offsets, stage - 1)
+        now = utc_now()
+        %{
+          title: "TC39 Proposals Stage #{stage}",
+          tickets: proposal_tickets("stage#{stage}"),
+          phase_candidates: add(now, candidates_offset * 60),
+          phase_end: add(now, end_offset * 60)
+        }
+      end
+
+    projects
+    |> Enum.map(fn project_attrs ->
+      {:ok, project} = Projects.create_project(project_attrs)
+      project
+    end)
+  end
+
+  def proposal_tickets(stage_key) do
+    proposals()
+    |> Map.get(stage_key)
+    |> Enum.map(fn ticket ->
+      %{
+        title: Map.get(ticket, "title"),
+        url: Map.get(ticket, "url") || "https://google.com"
+      }
+    end)
+  end
+
   defp ticket do
     %{
       title: Enum.random(@titles),
@@ -183,5 +214,9 @@ defmodule ExVote.Seeder do
     {candidates_time, end_time}
   end
 
+  defp proposals do
+    File.read!("./lib/ex_vote/seeds_tc39_proposals.json")
+    |> Poison.decode!()
+  end
 
 end
