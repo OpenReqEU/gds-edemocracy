@@ -193,7 +193,7 @@ defmodule ExVote.Seeder do
     |> Enum.map(fn ticket ->
       %{
         title: Map.get(ticket, "title"),
-        url: Map.get(ticket, "url") || "https://google.com"
+        url: Map.get(ticket, "url")
       }
     end)
   end
