@@ -30,15 +30,15 @@ config :ex_vote, ExVoteWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :ex_vote, ExVoteWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
-      ~r{priv/gettext/.*(po)$},
-      ~r{lib/ex_vote_web/views/.*(ex)$},
-      ~r{lib/ex_vote_web/templates/.*(eex)$}
-    ]
-  ]
+# config :ex_vote, ExVoteWeb.Endpoint,
+#   live_reload: [
+#     patterns: [
+#       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+#       ~r{priv/gettext/.*(po)$},
+#       ~r{lib/ex_vote_web/views/.*(ex)$},
+#       ~r{lib/ex_vote_web/templates/.*(eex)$}
+#     ]
+#   ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
