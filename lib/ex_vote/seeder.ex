@@ -120,7 +120,33 @@ defmodule ExVote.Seeder do
     "url1"
   ]
 
-  @candidate_summary "Placeholder summary for candidate"
+  @candidate_summaries [
+    """
+    My main focus in the development of the Javascript language is a sane type system.
+    Even though being a dynamic language shouldn't stop Javascript from helping the user prevent common mistakes.
+    """,
+    """
+    As a Javascript poweruser, productivity is all that matters.
+    It was fine for years until the influx of bootcamp graduates decided that JS hat to arrive in the twenty-first century.
+    If your proposal fixes a bug, fine. We don't have to change the very core of the language just because we can.
+    """,
+    """
+    In this age of web apps, javascript has become a de facto language for user interfaces. From this vantage point, it has to compete with the likes of Swift et al.
+    Once you start writing both languages, it becomes apparent that javascript feels inferior. Its main disadvantage being the old and confusing prototypal inheritance system.
+
+    I'm in favour of abolishing the prototype system and implementing a modern OOP approach from the bottom up.
+    """,
+    """
+    One of the main trends in the Javascript eco-system has been the uptick of functional influences. React is among the most used and loved frameworks and borrows heavily from functional ideas.
+    This is a healthy development and should be improved on. Even in the language itself.
+    """,
+    """
+    15 Years Google Developer, Mountain View
+    """,
+    """
+    I'm very passionate about Javascript.
+    """
+  ]
 
   def create_project do
     title = Enum.random(@titles)
@@ -156,7 +182,7 @@ defmodule ExVote.Seeder do
   def add_users_as_candidates_to_projects(users, projects) do
     for project <- projects,
         user <- users do
-      Projects.add_candidate(project, user, @candidate_summary)
+      Projects.add_candidate(project, user, Enum.random(@candidate_summaries))
     end
   end
 
