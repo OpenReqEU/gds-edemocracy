@@ -37,7 +37,11 @@
       <%= for ticket <- @project.tickets do %>
       <tr>
         <td>
-          <a href="<%= ticket.url %>"><%= ticket.title %></a>
+          <%= if ticket.url do %>
+            <a href="<%= ticket.url %>"><%= ticket.title %></a>
+          <% else %>
+            <span><%= ticket.title %></span>
+          <% end %>
         </td>
       </tr>
       <% end %>

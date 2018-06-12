@@ -12,8 +12,8 @@
 
 import ExVote.Seeder
 
-users = for _ <- 1..20, do: create_user()
-projects = for _ <- 1..30, do: create_project()
+users = for _ <- 1..5, do: create_user()
+projects = create_proposal_projects()
 
 guest = create_user("guest")
 user = create_user("user")

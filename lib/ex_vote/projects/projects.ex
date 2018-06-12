@@ -123,4 +123,15 @@ defmodule ExVote.Projects do
     Participations.delete_candidate_vote(participation_ticket_id)
   end
 
+  def change_role_to_candidate(attrs \\ %{}) do
+    participation = Participations.get_participation(%{id: Map.get(attrs, "project_id")}, %{id: Map.get(attrs, "user_id")})
+
+    with "user" <- participation.role,
+         "candidate" <- Map.get(attrs, "role") do
+      Participations.update_participation(participation, attrs)
+    else
+      _ -> {:error, "Invalid operation"}
+    end
+  end
+
 end

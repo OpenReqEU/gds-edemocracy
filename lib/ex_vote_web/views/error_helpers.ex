@@ -48,4 +48,19 @@ defmodule ExVoteWeb.ErrorHelpers do
       Gettext.dgettext(ExVoteWeb.Gettext, "errors", msg, opts)
     end
   end
+
+  def error_json({field, [message]}) do
+    %{
+      field => error_message_json(message)
+    }
+  end
+
+  def error_message_json(messages) when is_map(messages) do
+    Enum.reduce(messages, %{}, fn (error, acc) ->
+      Map.merge(acc, error_json(error))
+    end)
+  end
+
+  def error_message_json(message), do: message
+
 end

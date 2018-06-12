@@ -1,0 +1,280 @@
+{
+	"stage1": [
+		{
+			"title": "Date.parse fallback semantics",
+			"url": "https://github.com/mrrrgn/proposal-date-time-string-format"
+		},
+		{
+			"title": "export v from \"mod\"; statements",
+			"url": "https://github.com/tc39/proposal-export-default-from"
+		},
+		{
+			"title": "Observable",
+			"url": "https://github.com/tc39/proposal-observable"
+		},
+		{
+			"title": "Frozen Realms",
+			"url": "https://github.com/FUDCo/frozen-realms"
+		},
+		{
+			"title": "Math Extensions",
+			"url": "https://github.com/rwaldron/proposal-math-extensions"
+		},
+		{
+			"title": "of and from on collection constructors",
+			"url": "https://github.com/leobalter/proposal-setmap-offrom"
+		},
+		{
+			"title": "Generator arrow functions (=>*)",
+			"url": null
+		},
+		{
+			"title": "Promise.try",
+			"url": "https://github.com/ljharb/proposal-promise-try"
+		},
+		{
+			"title": "Optional Chaining",
+			"url": "https://github.com/tc39/proposal-optional-chaining"
+		},
+		{
+			"title": "Math.signbit: IEEE-754 sign bit",
+			"url": "http://jfbastien.github.io/papers/Math.signbit.html"
+		},
+		{
+			"title": "Error stacks",
+			"url": "https://github.com/ljharb/proposal-error-stacks"
+		},
+		{
+			"title": "do expressions",
+			"url": "https://github.com/tc39/proposal-do-expressions"
+		},
+		{
+			"title": "Temporal",
+			"url": "https://github.com/maggiepint/proposal-temporal"
+		},
+		{
+			"title": "Float16 on TypedArrays, DataView, Math.hfround",
+			"url": "https://docs.google.com/presentation/d/1Ta_IbravBUOvu7LUhlN49SvLU-8G8bIQnsS08P3Z4vY/edit?usp=sharing"
+		},
+		{
+			"title": "Change Number.parseInt/parseFloat to not coerce null/undefined/NaN (repo link TBD)",
+			"url": null
+		},
+		{
+			"title": "Binary AST",
+			"url": "https://github.com/syg/ecmascript-binary-ast"
+		},
+		{
+			"title": "Pipeline Operator",
+			"url": "https://github.com/tc39/proposal-pipeline-operator"
+		},
+		{
+			"title": "Extensible numeric literals",
+			"url": "https://github.com/littledan/proposal-extensible-numeric-literals"
+		},
+		{
+			"title": "First-class protocols",
+			"url": "https://github.com/michaelficarra/proposal-first-class-protocols"
+		},
+		{
+			"title": "Nullish coalescing Operator",
+			"url": "https://github.com/tc39/proposal-nullish-coalescing"
+		},
+		{
+			"title": "Partial application",
+			"url": "https://github.com/tc39/proposal-partial-application"
+		},
+		{
+			"title": "Cancellation API",
+			"url": "https://github.com/tc39/proposal-cancellation"
+		},
+		{
+			"title": "InterpreterDirective",
+			"url": "https://gist.github.com/bmeck/59cf8c16959eccffd8b7e9828826a842"
+		},
+		{
+			"title": "String.prototype.replaceAll",
+			"url": "https://github.com/psmarshall/string-replace-all-proposal"
+		},
+		{
+			"title": "String.prototype.codePoints",
+			"url": "https://github.com/RReverser/string-prototype-codepoints"
+		},
+		{
+			"title": "Distinguishing literal strings",
+			"url": "https://github.com/mikewest/tc39-proposal-literals"
+		},
+		{
+			"title": "Object.freeze + Object.seal syntax",
+			"url": "https://github.com/keithamus/object-freeze-seal-syntax"
+		},
+		{
+			"title": "Block Params",
+			"url": "https://github.com/samuelgoto/proposal-block-params"
+		},
+		{
+			"title": "{BigInt,Number}.fromString",
+			"url": "https://github.com/mathiasbynens/proposal-number-fromstring"
+		},
+		{
+			"title": "Math.seededRandoms()",
+			"url": "https://github.com/tabatkins/js-seeded-random"
+		},
+		{
+			"title": "Maximally minimal mixins",
+			"url": "https://github.com/justinfagnani/proposal-mixins"
+		},
+		{
+			"title": "Getting last element of Array",
+			"url": "https://github.com/keithamus/proposal-array-last"
+		},
+		{
+			"title": "Collection methods",
+			"url": "https://github.com/tc39/collection-methods"
+		},
+		{
+			"title": "Richer Keys",
+			"url": "https://docs.google.com/presentation/d/1q3CGeXqskL1gHTATH_VE9Dhj0VGTIAOzJ1cR0dYqDBk/edit#slide=id.p"
+		},
+		{
+			"title": "Slice notation",
+			"url": "https://github.com/gsathya/proposal-slice-notation/"
+		},
+		{
+			"title": "Logical Assignment Operators",
+			"url": "https://github.com/jridgewell/proposal-logical-assignment"
+		},
+		{
+			"title": "Sequence properties in Unicode property escapes",
+			"url": "https://github.com/mathiasbynens/proposal-regexp-unicode-sequence-properties"
+		},
+		{
+			"title": "Module Keys",
+			"url": "https://github.com/mikesamuel/tc39-module-keys"
+		},
+		{
+			"title": "Class Static Block",
+			"url": "https://github.com/rbuckton/proposal-class-static-block#readme"
+		},
+		{
+			"title": "class Access Expressions",
+			"url": "https://github.com/rbuckton/proposal-class-access-expressions"
+		},
+		{
+			"title": "Pattern Matching",
+			"url": "https://github.com/tc39/proposal-pattern-matching"
+		},
+		{
+			"title": "RegExp Match array offsets",
+			"url": "https://github.com/rbuckton/proposal-regexp-match-offsets"
+		}
+	],
+	"stage2": [
+		{
+			"title": "Numeric separators",
+			"url": "https://github.com/tc39/proposal-numeric-separator"
+		},
+		{
+			"title": "function.sent metaproperty",
+			"url": "https://github.com/allenwb/ESideas/blob/master/Generator%20metaproperty.md"
+		},
+		{
+			"title": "Decorators",
+			"url": "http://github.com/tc39/proposal-decorators"
+		},
+		{
+			"title": "throw expressions",
+			"url": "https://github.com/rbuckton/proposal-throw-expressions"
+		},
+		{
+			"title": "Atomics.waitAsync",
+			"url": "https://github.com/tc39/proposal-atomics-wait-async"
+		},
+		{
+			"title": "Hashbang Grammar",
+			"url": "https://github.com/bmeck/proposal-hashbang"
+		},
+		{
+			"title": "WeakRefs",
+			"url": "https://github.com/tc39/proposal-weakrefs"
+		},
+		{
+			"title": "Object.fromEntries",
+			"url": "https://github.com/bakkot/object-from-entries"
+		},
+		{
+			"title": "Top-level await",
+			"url": "https://github.com/tc39/proposal-top-level-await"
+		},
+		{
+			"title": "Function.prototype.toString() censorship",
+			"url": "https://github.com/domenic/proposal-function-prototype-tostring-censorship"
+		},
+		{
+			"title": "New Set methods",
+			"url": "https://github.com/tc39/set-methods"
+		},
+		{
+			"title": "Well-formed JSON.stringify",
+			"url": "https://github.com/gibson042/ecma262-proposal-well-formed-stringify"
+		},
+		{
+			"title": "Realms",
+			"url": "https://github.com/caridy/proposal-realms"
+		}
+	],
+	"stage3": [
+		{
+			"title": "Function.prototype.toString revision",
+			"url": "https://github.com/tc39/Function-prototype-toString-revision"
+		},
+		{
+			"title": "global",
+			"url": "https://github.com/tc39/proposal-global"
+		},
+		{
+			"title": "import()",
+			"url": "https://github.com/tc39/proposal-dynamic-import"
+		},
+		{
+			"title": "Legacy RegExp features in JavaScript",
+			"url": "https://github.com/tc39/proposal-regexp-legacy-features"
+		},
+		{
+			"title": "BigInt",
+			"url": "https://github.com/tc39/proposal-bigint"
+		},
+		{
+			"title": "import.meta",
+			"url": "https://github.com/tc39/proposal-import-meta"
+		},
+		{
+			"title": "Private instance methods and accessors",
+			"url": "https://github.com/tc39/proposal-private-methods"
+		},
+		{
+			"title": "Array.prototype.{flat,flatMap}",
+			"url": "https://github.com/tc39/proposal-flatMap"
+		},
+		{
+			"title": "Class Public Instance Fields & Private Instance Fields",
+			"url": "https://github.com/tc39/proposal-class-fields"
+		},
+		{
+			"title": "Static class fields and private static methods",
+			"url": "http://github.com/tc39/proposal-static-class-features/"
+		},
+		{
+			"title": "String.prototype.{trimStart,trimEnd}",
+			"url": "https://github.com/sebmarkbage/ecmascript-string-left-right-trim"
+		},
+		{
+			"title": "String.prototype.matchAll",
+			"url": "https://github.com/tc39/String.prototype.matchAll"
+		},
+		{
+			"title": "Symbol.prototype.description",
+			"url": "https://github.com/tc39/proposal-Symbol-description"
+		}
+	]
+}
