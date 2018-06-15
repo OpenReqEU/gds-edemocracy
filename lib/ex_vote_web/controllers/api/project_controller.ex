@@ -134,6 +134,26 @@ defmodule ExVoteWeb.Api.ProjectController do
     end
   end
 
+  swagger_path :list_candidates do
+    get "/projects/{id}/candidates"
+    summary "List all candidates"
+    description "Returns all candidates for the specified project"
+    parameters do
+      id :path, :integer, "Project id", required: true
+    end
+    response 200, "OK", Schema.ref(:participations)
+    response 400, "Error"
+  end
+  def list_candidates(conn, %{"id" => project_id}) do
+    candidates =
+      ExVote.Projects.get_project(project_id)
+      |> ExVote.Participations.get_participations("candidate")
+
+    conn
+    |> assign(:candidates, candidates)
+    |> render("candidates.json")
+  end
+
   def swagger_definitions do
     %{
       project: swagger_schema do
@@ -186,6 +206,12 @@ defmodule ExVoteWeb.Api.ProjectController do
           role :string, "Role", required: true
           candidate_summary :string, "Summary text (only relevant for role: candidate)"
         end
+      end,
+      participations: swagger_schema do
+        title "Participations"
+        description "A collection of participations"
+        type :array
+        items Schema.ref(:participation)
       end,
       role: swagger_schema do
         title "Role"

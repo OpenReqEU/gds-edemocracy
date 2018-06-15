@@ -18,6 +18,10 @@ defmodule ExVoteWeb.Api.ProjectView do
     participation_json(participation)
   end
 
+  def render("candidates.json", %{:candidates => candidates}) do
+    Enum.map(candidates, &participation_json/1)
+  end
+
   def render("error.json", %{:changeset => changeset}) do
     errors =
       changeset
