@@ -154,6 +154,26 @@ defmodule ExVoteWeb.Api.ProjectController do
     |> render("candidates.json")
   end
 
+  swagger_path :list_tickets do
+    get "/projects/{id}/tickets"
+    summary "List all tickets"
+    description "Returns all tickets for the specified project"
+    parameters do
+      id :path, :integer, "Project id", required: true
+    end
+    response 200, "OK", Schema.ref(:tickets)
+    response 400, "Error"
+  end
+  def list_tickets(conn, %{"id" => project_id}) do
+    tickets =
+      ExVote.Projects.get_project(project_id, [:tickets])
+      |> Map.get(:tickets)
+
+    conn
+    |> assign(:tickets, tickets)
+    |> render("tickets.json")
+  end
+
   def swagger_definitions do
     %{
       project: swagger_schema do
