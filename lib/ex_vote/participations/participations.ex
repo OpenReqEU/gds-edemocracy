@@ -76,12 +76,6 @@ defmodule ExVote.Participations do
     |> Repo.insert()
   end
 
-  def create_typed_participation(attrs) do
-    %Participation{}
-    |> Participation.changeset_create(attrs)
-    |> Ecto.Changeset.apply_action(:insert)
-  end
-
   def update_vote(%UserParticipation{} = participation, attrs) do
     participation
     |> UserParticipation.changeset_update_vote(attrs)

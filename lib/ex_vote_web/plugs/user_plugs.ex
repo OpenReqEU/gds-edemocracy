@@ -2,14 +2,14 @@ defmodule ExVoteWeb.Plugs.UserPlugs do
   require Logger
   import Plug.Conn
 
-  def fetch_user(conn, _) do
+  def fetch_user(conn, _opts) do
     case get_session(conn, :user) do
       %ExVote.Accounts.User{} = user -> assign(conn, :user, user)
       _ -> assign(conn, :user, nil)
     end
   end
 
-  def ensure_token(conn, _) do
+  def ensure_token(conn, _opts) do
     with {:ok, token} <- extract_token(conn),
          {:ok, user_id} <- ExVoteWeb.Tokens.verify(token),
          user = ExVote.Accounts.get_user(user_id) do
