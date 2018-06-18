@@ -3,7 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "4000:4000"
+      - "9750:9750"
     depends_on:
       - "db"
     environment:

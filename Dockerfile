@@ -11,5 +11,5 @@ RUN mix local.rebar --force
 RUN mix deps.compile
 RUN mix compile
 
-EXPOSE 4000
+EXPOSE 9750
 CMD ["./run.sh"]
