@@ -7,12 +7,12 @@ defmodule ExVoteWeb.Api.ProjectController do
   plug :fetch_project
 
   swagger_path :index do
-    get "/projects"
     summary "All projects"
     description "Lists all projects"
     security []
     response 200, "OK", Schema.ref(:project_list)
   end
+
   def index(conn, _params) do
     conn
     |> assign(:projects, ExVote.Projects.list_projects)
@@ -20,16 +20,16 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :show do
-    get "/projects/{id}"
     summary "Get project informations"
     description "Returns a project"
     security []
     parameters do
-      id :path, :integer, "ID of project to return", required: true
+      project_id :path, :integer, "ID of project to return", required: true
     end
     response 200, "OK", Schema.ref(:project)
     response 404, "Not found"
   end
+
   def show(conn, _params) do
     project =
       conn.assigns[:project]
@@ -47,7 +47,6 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :create do
-    post "/projects"
     summary "Add a new project"
     description "Creates a new project\n Please note that the id fields are ignored on creation"
     security []
@@ -73,16 +72,16 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :join do
-    post "/projects/{id}/join"
     summary "Join a project"
     description "Creates a Participation in the specified project with the current user (identified by Authorization token)"
     parameters do
-      id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project id", required: true
       body :body, Schema.ref(:participation), "The participation details", required: true
     end
     response 200, "OK", Schema.ref(:participation)
     response 400, "Error"
   end
+
   def join(conn, params) do
     user = conn.assigns[:user]
     params = Map.put(params, "user_id", user.id)
@@ -101,11 +100,10 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :change_role do
-    post "/projects/{id}/changerole"
     summary "Change a users role"
     description "Changes the current users role to candidate"
     parameters do
-      id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project id", required: true
       body :body, Schema.ref(:role), "Role information", required: true
     end
     response 200, "OK", Schema.ref(:participation)
@@ -132,15 +130,15 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :list_candidates do
-    get "/projects/{id}/candidates"
     summary "List all candidates"
     description "Returns all candidates for the specified project"
     parameters do
-      id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project id", required: true
     end
     response 200, "OK", Schema.ref(:participations)
     response 400, "Error"
   end
+
   def list_candidates(conn, _params) do
     project = conn.assigns[:project]
     candidates = ExVote.Participations.get_participations(project, "candidate")
@@ -151,15 +149,15 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :list_tickets do
-    get "/projects/{id}/tickets"
     summary "List all tickets"
     description "Returns all tickets for the specified project"
     parameters do
-      id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project id", required: true
     end
     response 200, "OK", Schema.ref(:tickets)
     response 400, "Error"
   end
+
   def list_tickets(conn, _params) do
     tickets =
       conn.assigns[:project]

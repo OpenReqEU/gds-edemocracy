@@ -54,6 +54,7 @@ defmodule ExVoteWeb.Api.ProjectView do
 
   defp participation_json(%ExVote.Participations.UserParticipation{} = participation) do
     %{
+      name: participation.user.name,
       project_id: participation.project_id,
       user_id: participation.user_id,
       role: participation.role
@@ -62,6 +63,7 @@ defmodule ExVoteWeb.Api.ProjectView do
 
   defp participation_json(%ExVote.Participations.CandidateParticipation{} = participation) do
     %{
+      name: participation.user.name,
       project_id: participation.project_id,
       user_id: participation.user_id,
       role: participation.role,
