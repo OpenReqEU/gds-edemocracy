@@ -52,14 +52,18 @@ defmodule ExVoteWeb.Router do
 
     scope "/projects" do
       resources "/", Api.ProjectController, only: [:index, :show, :create], param: "project_id"
-      get "/:project_id/candidates", Api.ProjectController, :list_candidates
       get "/:project_id/tickets", Api.ProjectController, :list_tickets
+      get "/:project_id/participations", Api.ProjectController, :list_participations
+      get "/:project_id/participations/candidates", Api.ProjectController, :list_candidates
+      get "/:project_id/participations/users", Api.ProjectController, :list_users
+      # post "/:id/candidates/vote", Api.ProjectController, :vote_candidate
+      # post "/:id/tickets/vote", Api.ProjectController, :vote_ticket
 
       scope "/" do
         pipe_through :api_auth
 
-        post "/:project_id/join", Api.ProjectController, :join
-        post "/:project_id/changerole", Api.ProjectController, :change_role
+        # post "/:project_id/join", Api.ProjectController, :join
+        # post "/:project_id/changerole", Api.ProjectController, :change_role
       end
     end
   end
@@ -84,8 +88,7 @@ defmodule ExVoteWeb.Router do
       },
       security: [
         %{ApiKey: []}
-      ],
-      basePath: "/api"
+      ]
     }
   end
 end

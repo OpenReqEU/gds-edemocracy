@@ -140,12 +140,47 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   def list_candidates(conn, _params) do
-    project = conn.assigns[:project]
-    candidates = ExVote.Participations.get_participations(project, "candidate")
+    conn.assigns[:project]
+    |> ExVote.Participations.get_participations("candidate")
+    |> render_participations(conn)
+  end
 
+  swagger_path :list_users do
+    summary "List all users"
+    description "Returns all users for the specified project"
+    parameters do
+      project_id :path, :integer, "Project id", required: true
+    end
+    response 200, "OK", Schema.ref(:participations)
+    response 400, "Error"
+  end
+
+  def list_users(conn, _params) do
+    conn.assigns[:project]
+    |> ExVote.Participations.get_participations("user")
+    |> render_participations(conn)
+  end
+
+  swagger_path :list_participations do
+    summary "List all participations"
+    description "Returns all participations for the specified project"
+    parameters do
+      project_id :path, :integer, "Project id", required: true
+    end
+    response 200, "OK", Schema.ref(:participations)
+    response 400, "Error"
+  end
+
+  def list_participations(conn, _params) do
+    conn.assigns[:project]
+    |> ExVote.Participations.get_participations()
+    |> render_participations(conn)
+  end
+
+  defp render_participations(participations, conn) do
     conn
-    |> assign(:candidates, candidates)
-    |> render("candidates.json")
+    |> assign(:participations, participations)
+    |> render("participations.json")
   end
 
   swagger_path :list_tickets do
