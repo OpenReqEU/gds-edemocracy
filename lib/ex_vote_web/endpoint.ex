@@ -47,8 +47,14 @@ defmodule ExVoteWeb.Endpoint do
   """
   def init(_key, config) do
     if config[:load_from_system_env] do
-      port = System.get_env("PORT") || raise "expected the PORT environment variable to be set"
-      {:ok, Keyword.put(config, :http, [:inet6, port: port])}
+      port = System.get_env("EXVOTE_PORT") || raise "expected the EXVOTE_PORT environment variable to be set"
+      path = System.get_env("EXVOTE_PATH") || raise "expected the EXVOTE_PATH environment variable to be set"
+      host = System.get_env("EXVOTE_HOST") || raise "expected the EXVOTE_HOST environment variable to be set"
+      config =
+        config
+        |> Keyword.put(:http, [:inet6, port: port])
+        |> Keyword.put(:url, [host: host, port: port, path: path])
+      {:ok, config}
     else
       {:ok, config}
     end

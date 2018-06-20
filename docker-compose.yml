@@ -3,11 +3,14 @@ services:
   web:
     build: .
     ports:
-      - "4000:4000"
+      - "9750:9750"
     depends_on:
       - "db"
     environment:
       MIX_ENV: docker
+      EXVOTE_PORT: 9750
+      EXVOTE_PATH: /hitec/edemocracy
+      EXVOTE_HOST: localhost
   db:
     image: postgres
     environment:
