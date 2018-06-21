@@ -20,7 +20,7 @@ defmodule ExVoteWeb.Router do
     plug :ensure_token
   end
 
-  scope "/", ExVoteWeb do
+  scope "/hitec/edemocracy/", ExVoteWeb do
     pipe_through :browser # Use the default browser stack
 
     get "/", ProjectController, :index
