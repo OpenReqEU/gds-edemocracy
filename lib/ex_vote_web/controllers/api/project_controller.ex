@@ -2,6 +2,10 @@ defmodule ExVoteWeb.Api.ProjectController do
   use ExVoteWeb, :controller
   use PhoenixSwagger
 
+  import ExVoteWeb.Plugs.ProjectPlugs
+
+  plug :fetch_project
+
   swagger_path :index do
     get "/projects"
     summary "All projects"
@@ -26,8 +30,10 @@ defmodule ExVoteWeb.Api.ProjectController do
     response 200, "OK", Schema.ref(:project)
     response 404, "Not found"
   end
-  def show(conn, %{"id" => project_id}) do
-    project = ExVote.Projects.get_project(project_id, [:tickets])
+  def show(conn, _params) do
+    project =
+      conn.assigns[:project]
+      |> ExVote.Repo.preload([:tickets])
 
     if project do
       conn
@@ -78,14 +84,10 @@ defmodule ExVoteWeb.Api.ProjectController do
     response 400, "Error"
   end
   def join(conn, params) do
-    user = Map.fetch!(conn.assigns, :user)
-    {project_id, params} = Map.pop(params, "id")
-    participation =
-      params
-      |> Map.put("user_id", user.id)
-      |> Map.put("project_id", project_id)
+    user = conn.assigns[:user]
+    params = Map.put(params, "user_id", user.id)
 
-    case ExVote.Participations.create_participation(participation) do
+    case ExVote.Participations.create_participation(params) do
       {:ok, participation} ->
         conn
         |> assign(:participation, participation)
@@ -100,7 +102,7 @@ defmodule ExVoteWeb.Api.ProjectController do
 
   swagger_path :change_role do
     post "/projects/{id}/changerole"
-    summary "Changes a users role"
+    summary "Change a users role"
     description "Changes the current users role to candidate"
     parameters do
       id :path, :integer, "Project id", required: true
@@ -110,14 +112,10 @@ defmodule ExVoteWeb.Api.ProjectController do
     response 400, "Error"
   end
   def change_role(conn, params) do
-    user = Map.fetch!(conn.assigns, :user)
-    {project_id, params} = Map.pop(params, "id")
-    role_change =
-      params
-      |> Map.put("user_id", user.id)
-      |> Map.put("project_id", project_id)
+    user = conn.assigns[:user]
+    params = Map.put(params, "user_id", user.id)
 
-    case ExVote.Projects.change_role_to_candidate(role_change) do
+    case ExVote.Projects.change_role_to_candidate(params) do
       {:ok, participation} ->
         conn
         |> assign(:participation, participation)
@@ -130,8 +128,47 @@ defmodule ExVoteWeb.Api.ProjectController do
         |> assign(:changeset, changeset)
         |> put_status(400)
         |> render("error.json")
-
     end
+  end
+
+  swagger_path :list_candidates do
+    get "/projects/{id}/candidates"
+    summary "List all candidates"
+    description "Returns all candidates for the specified project"
+    parameters do
+      id :path, :integer, "Project id", required: true
+    end
+    response 200, "OK", Schema.ref(:participations)
+    response 400, "Error"
+  end
+  def list_candidates(conn, _params) do
+    project = conn.assigns[:project]
+    candidates = ExVote.Participations.get_participations(project, "candidate")
+
+    conn
+    |> assign(:candidates, candidates)
+    |> render("candidates.json")
+  end
+
+  swagger_path :list_tickets do
+    get "/projects/{id}/tickets"
+    summary "List all tickets"
+    description "Returns all tickets for the specified project"
+    parameters do
+      id :path, :integer, "Project id", required: true
+    end
+    response 200, "OK", Schema.ref(:tickets)
+    response 400, "Error"
+  end
+  def list_tickets(conn, _params) do
+    tickets =
+      conn.assigns[:project]
+      |> ExVote.Repo.preload([:tickets])
+      |> Map.get(:tickets)
+
+    conn
+    |> assign(:tickets, tickets)
+    |> render("tickets.json")
   end
 
   def swagger_definitions do
@@ -186,6 +223,12 @@ defmodule ExVoteWeb.Api.ProjectController do
           role :string, "Role", required: true
           candidate_summary :string, "Summary text (only relevant for role: candidate)"
         end
+      end,
+      participations: swagger_schema do
+        title "Participations"
+        description "A collection of participations"
+        type :array
+        items Schema.ref(:participation)
       end,
       role: swagger_schema do
         title "Role"
