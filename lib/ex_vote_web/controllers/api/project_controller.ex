@@ -211,9 +211,9 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :show_current_participation do
-    summary "Shows the participation for the current user and project."
+    summary "Shows the participation for the current user and project"
     parameters do
-      project_id :path, :integer, "project id", required: true
+      project_id :path, :integer, "Project id", required: true
     end
     response 200, "OK", Schema.ref(:participation)
     response 404, "User has no participation"
@@ -227,6 +227,30 @@ defmodule ExVoteWeb.Api.ProjectController do
     end
   end
 
+  swagger_path :create_current_participation do
+    summary "Creates a new participation for the current user and project"
+    parameters do
+      project_id :path, :integer, "Project id", required: true
+      body :body, Schema.ref(:participation), "Participation", required: true
+    end
+    response 200, "OK", Schema.ref(:participation)
+    response 400, "Participation already exists"
+  end
+
+  def create_current_participation(conn, params) do
+    params = Map.put(params, "user_id", conn.assigns.user.id)
+    case Participations.create_participation(params) do
+      {:ok, participation} ->
+        conn
+        |> assign(:participation, participation)
+        |> render("participation.json")
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> put_status(400)
+        |> render("error.json")
+    end
+  end
 
   def swagger_definitions do
     %{
