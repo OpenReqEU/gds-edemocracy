@@ -1,0 +1,36 @@
+* Current routes
+   | Method | URL                              |
+   |--------+----------------------------------|
+   | GET    | /projects                        |
+   | POST   | /projects                        |
+   | GET    | /projects/:project_id/           |
+   | GET    | /projects/:project_id/candidates |
+   | GET    | /projects/:project_id/tickets    |
+   | POST   | /projects/:project_id/join       |
+   | POST   | /projects/:project_id/changerole |
+
+* Proposal
+  - [X] Projects
+   | Method | URL                           |
+   |--------+-------------------------------|
+   | GET    | /projects                     |
+   | POST   | /projects                     |
+   | GET    | /projects/:project_id/        |
+   | GET    | /projects/:project_id/tickets |
+  - [X] Participation infos
+   | Method | URL                                             |
+   |--------+-------------------------------------------------|
+   | GET    | /projects/:project_id/participations            |
+   | GET    | /projects/:project_id/participations/candidates |
+   | GET    | /projects/:project_id/participations/users      |
+  - [ ] Participation for current user
+   | Method | URL                                    |
+   |--------+----------------------------------------|
+   | GET    | /projects/:project_id/my_participation |
+   | POST   | /projects/:project_id/my_participation |
+   | PUT    | /projects/:project_id/my_participation |
+  - [ ] Votes (???)
+   | Method | URL                                          |
+   |--------+----------------------------------------------|
+   | GET    | /projects/:project_id/my_participation/votes |
+   | PUT    | /projects/:project_id/my_participation/votes |

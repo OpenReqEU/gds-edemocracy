@@ -53,22 +53,32 @@ defmodule ExVoteWeb.Api.ProjectView do
   end
 
   defp participation_json(%ExVote.Participations.UserParticipation{} = participation) do
-    %{
-      name: participation.user.name,
+    json = %{
       project_id: participation.project_id,
       user_id: participation.user_id,
       role: participation.role
     }
+
+    if Ecto.assoc_loaded?(participation.user) do
+      Map.put(json, :name, participation.user.name)
+    else
+      json
+    end
   end
 
   defp participation_json(%ExVote.Participations.CandidateParticipation{} = participation) do
-    %{
-      name: participation.user.name,
+    json = %{
       project_id: participation.project_id,
       user_id: participation.user_id,
       role: participation.role,
       candidate_summary: participation.candidate_summary
     }
+
+    if Ecto.assoc_loaded?(participation.user) do
+      Map.put(json, :name, participation.user.name)
+    else
+      json
+    end
   end
 
 end

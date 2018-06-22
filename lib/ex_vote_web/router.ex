@@ -62,6 +62,7 @@ defmodule ExVoteWeb.Router do
       scope "/" do
         pipe_through :api_auth
 
+        get "/:project_id/my_participation", Api.ProjectController, :show_current_participation
         # post "/:project_id/join", Api.ProjectController, :join
         # post "/:project_id/changerole", Api.ProjectController, :change_role
       end

@@ -5,7 +5,6 @@ defmodule ExVoteWeb.Api.UserController do
   alias ExVote.Accounts
 
   swagger_path :login do
-    post "/users/login"
     summary "User login"
     description "Returns an authentication token"
     security []
@@ -32,7 +31,6 @@ defmodule ExVoteWeb.Api.UserController do
   end
 
   swagger_path :token_test do
-    get "/users/token_test"
     summary "Token test"
     description "Tests the token present in the authorization header"
     response 200, "OK"

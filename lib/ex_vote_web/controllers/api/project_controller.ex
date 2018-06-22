@@ -3,8 +3,14 @@ defmodule ExVoteWeb.Api.ProjectController do
   use PhoenixSwagger
 
   import ExVoteWeb.Plugs.ProjectPlugs
+  import ExVoteWeb.Plugs.ParticipationPlugs
+
+  alias ExVote.Projects
+  alias ExVote.Participations
+  alias ExVote.Repo
 
   plug :fetch_project
+  plug :fetch_current_participation when action in [:show_current_participation]
 
   swagger_path :index do
     summary "All projects"
@@ -15,7 +21,7 @@ defmodule ExVoteWeb.Api.ProjectController do
 
   def index(conn, _params) do
     conn
-    |> assign(:projects, ExVote.Projects.list_projects)
+    |> assign(:projects, Projects.list_projects())
     |> render("index.json")
   end
 
@@ -33,7 +39,7 @@ defmodule ExVoteWeb.Api.ProjectController do
   def show(conn, _params) do
     project =
       conn.assigns[:project]
-      |> ExVote.Repo.preload([:tickets])
+      |> Repo.preload([:tickets])
 
     if project do
       conn
@@ -58,7 +64,7 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   def create(conn, params) do
-    case ExVote.Projects.create_project(params) do
+    case Projects.create_project(params) do
       {:ok, project} ->
         conn
         |> assign(:project, project)
@@ -86,7 +92,7 @@ defmodule ExVoteWeb.Api.ProjectController do
     user = conn.assigns[:user]
     params = Map.put(params, "user_id", user.id)
 
-    case ExVote.Participations.create_participation(params) do
+    case Participations.create_participation(params) do
       {:ok, participation} ->
         conn
         |> assign(:participation, participation)
@@ -113,7 +119,7 @@ defmodule ExVoteWeb.Api.ProjectController do
     user = conn.assigns[:user]
     params = Map.put(params, "user_id", user.id)
 
-    case ExVote.Projects.change_role_to_candidate(params) do
+    case Projects.change_role_to_candidate(params) do
       {:ok, participation} ->
         conn
         |> assign(:participation, participation)
@@ -141,7 +147,7 @@ defmodule ExVoteWeb.Api.ProjectController do
 
   def list_candidates(conn, _params) do
     conn.assigns[:project]
-    |> ExVote.Participations.get_participations("candidate")
+    |> Participations.get_participations("candidate")
     |> render_participations(conn)
   end
 
@@ -157,7 +163,7 @@ defmodule ExVoteWeb.Api.ProjectController do
 
   def list_users(conn, _params) do
     conn.assigns[:project]
-    |> ExVote.Participations.get_participations("user")
+    |> Participations.get_participations("user")
     |> render_participations(conn)
   end
 
@@ -173,7 +179,7 @@ defmodule ExVoteWeb.Api.ProjectController do
 
   def list_participations(conn, _params) do
     conn.assigns[:project]
-    |> ExVote.Participations.get_participations()
+    |> Participations.get_participations()
     |> render_participations(conn)
   end
 
@@ -196,13 +202,31 @@ defmodule ExVoteWeb.Api.ProjectController do
   def list_tickets(conn, _params) do
     tickets =
       conn.assigns[:project]
-      |> ExVote.Repo.preload([:tickets])
+      |> Repo.preload([:tickets])
       |> Map.get(:tickets)
 
     conn
     |> assign(:tickets, tickets)
     |> render("tickets.json")
   end
+
+  swagger_path :show_current_participation do
+    summary "Shows the participation for the current user and project."
+    parameters do
+      project_id :path, :integer, "project id", required: true
+    end
+    response 200, "OK", Schema.ref(:participation)
+    response 404, "User has no participation"
+  end
+
+  def show_current_participation(conn, _params) do
+    if conn.assigns[:participation] do
+      render(conn, "participation.json")
+    else
+      send_resp(conn, 404, "")
+    end
+  end
+
 
   def swagger_definitions do
     %{

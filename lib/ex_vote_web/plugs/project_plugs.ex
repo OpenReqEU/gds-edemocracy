@@ -11,5 +11,4 @@ defmodule ExVoteWeb.Plugs.ProjectPlugs do
 
     assign(conn, :project, project)
   end
-
 end
