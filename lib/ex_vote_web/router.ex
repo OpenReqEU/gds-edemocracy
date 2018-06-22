@@ -64,6 +64,7 @@ defmodule ExVoteWeb.Router do
 
         get "/:project_id/my_participation", Api.ProjectController, :show_current_participation
         post "/:project_id/my_participation", Api.ProjectController, :create_current_participation
+        put "/:project_id/my_participation", Api.ProjectController, :update_current_participation
         # post "/:project_id/join", Api.ProjectController, :join
         # post "/:project_id/changerole", Api.ProjectController, :change_role
       end

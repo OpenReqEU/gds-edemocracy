@@ -10,7 +10,10 @@ defmodule ExVoteWeb.Api.ProjectController do
   alias ExVote.Repo
 
   plug :fetch_project
-  plug :fetch_current_participation when action in [:show_current_participation]
+  plug :fetch_current_participation when action in [
+    :show_current_participation,
+    :update_current_participation
+  ]
 
   swagger_path :index do
     summary "All projects"
@@ -248,6 +251,33 @@ defmodule ExVoteWeb.Api.ProjectController do
         conn
         |> assign(:changeset, changeset)
         |> put_status(400)
+        |> render("error.json")
+    end
+  end
+
+  swagger_path :update_current_participation do
+    summary "Updates the current participation"
+    parameters do
+      project_id :path, :integer, "Project id", required: true
+      body :body, Schema.ref(:participation), "Participation", required: true
+    end
+    response 200, "OK", Schema.ref(:participation)
+    response 404, "User has no participation"
+  end
+
+  def update_current_participation(conn, params) do
+    with participation when not is_nil(participation) <- conn.assigns[:participation],
+         params <- Map.put(params, "user_id", conn.assigns.user.id),
+         {:ok, participation} <- Participations.update_participation(participation, params) do
+      conn
+      |> assign(:participation, participation)
+      |> render("participation.json")
+    else
+      nil ->
+        send_resp(conn, 404, "")
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
         |> render("error.json")
     end
   end

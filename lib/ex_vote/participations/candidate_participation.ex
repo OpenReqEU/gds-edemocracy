@@ -35,8 +35,8 @@ defmodule ExVote.Participations.CandidateParticipation do
   @doc false
   def changeset_update(participation, attrs) do
     participation
-    |> cast(attrs, [:role, :candidate_summary, :project_id, :user_id])
-    |> validate_required([:role, :candidate_summary, :project_id, :user_id])
+    |> cast(attrs, [:role, :candidate_summary])
+    |> validate_required([:role, :candidate_summary])
     |> validate_role()
     |> unique_constraint(
       :project_id,

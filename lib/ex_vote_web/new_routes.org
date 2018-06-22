@@ -23,7 +23,7 @@
    | GET    | /projects/:project_id/participations            |
    | GET    | /projects/:project_id/participations/candidates |
    | GET    | /projects/:project_id/participations/users      |
-  - [ ] Participation for current user
+  - [X] Participation for current user
    | Method | URL                                    |
    |--------+----------------------------------------|
    | GET    | /projects/:project_id/my_participation |
