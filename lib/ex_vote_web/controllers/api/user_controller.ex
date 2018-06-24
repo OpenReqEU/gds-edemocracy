@@ -36,7 +36,6 @@ defmodule ExVoteWeb.Api.UserController do
     summary "Test authentication"
     description "Tests the token present in the authorization header"
     tag "Users"
-    produces "text/plain"
     response 200, "OK"
     response 401, "Authentication required"
   end

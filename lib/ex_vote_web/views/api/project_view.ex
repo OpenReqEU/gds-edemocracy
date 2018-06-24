@@ -1,6 +1,8 @@
 defmodule ExVoteWeb.Api.ProjectView do
   use ExVoteWeb, :view
 
+  def render("error.json", %{:changeset => changeset}), do: render_changeset_errors(changeset)
+
   def render("index.json", %{:projects => projects}) do
     Enum.map(projects, &short_project_json/1)
   end
@@ -14,30 +16,12 @@ defmodule ExVoteWeb.Api.ProjectView do
     }
   end
 
-  def render("participation.json", %{:participation => participation}) do
-    participation_json(participation)
-  end
-
-  def render("participations.json", %{:participations => participations}) do
-    Enum.map(participations, &participation_json/1)
-  end
-
   def render("tickets.json", %{:tickets => tickets}) do
     Enum.map(tickets, &ticket_json/1)
   end
 
   def render("users.json", %{:users => users}) do
     Enum.map(users, &user_json/1)
-  end
-
-  def render("error.json", %{:changeset => changeset}) do
-    errors =
-      changeset
-      |> Ecto.Changeset.traverse_errors(fn {msg, _opts} -> msg end)
-
-    %{
-      errors: Enum.map(errors, &error_json/1)
-    }
   end
 
   defp short_project_json(%ExVote.Projects.Project{} = project) do
@@ -54,35 +38,6 @@ defmodule ExVoteWeb.Api.ProjectView do
       title: ticket.title,
       url: ticket.url
     }
-  end
-
-  defp participation_json(%ExVote.Participations.UserParticipation{} = participation) do
-    json = %{
-      project_id: participation.project_id,
-      user_id: participation.user_id,
-      role: participation.role
-    }
-
-    if Ecto.assoc_loaded?(participation.user) do
-      Map.put(json, :name, participation.user.name)
-    else
-      json
-    end
-  end
-
-  defp participation_json(%ExVote.Participations.CandidateParticipation{} = participation) do
-    json = %{
-      project_id: participation.project_id,
-      user_id: participation.user_id,
-      role: participation.role,
-      candidate_summary: participation.candidate_summary
-    }
-
-    if Ecto.assoc_loaded?(participation.user) do
-      Map.put(json, :name, participation.user.name)
-    else
-      json
-    end
   end
 
   defp user_json(%ExVote.Accounts.User{} = user) do

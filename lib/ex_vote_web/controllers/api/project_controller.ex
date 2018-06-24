@@ -83,7 +83,7 @@ defmodule ExVoteWeb.Api.ProjectController do
     parameters do
       project_id :path, :integer, "Project id", required: true
     end
-    response 200, "OK", Schema.ref(:tickets)
+    response 200, "OK", Schema.ref(:ticket_list)
     response 400, "Error"
   end
 
@@ -108,7 +108,7 @@ defmodule ExVoteWeb.Api.ProjectController do
           title :string, "Project title", required: true
           phase_candidates :string, "Begin of the candidate phase", required: true, format: "date-time"
           phase_end :string, "End of the projects lifetime", required: true, format: "date-time"
-          tickets Schema.ref(:tickets)
+          tickets Schema.ref(:ticket_list)
         end
       end,
       short_project: swagger_schema do
@@ -135,7 +135,7 @@ defmodule ExVoteWeb.Api.ProjectController do
           url :string, "URL to the bugtracker", required: true, format: "url"
         end
       end,
-      tickets: swagger_schema do
+      ticket_list: swagger_schema do
         title "Tickets"
         description "A collection of tickets"
         type :array

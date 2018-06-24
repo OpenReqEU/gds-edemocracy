@@ -21,7 +21,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     parameters do
       project_id :path, :integer, "Project id", required: true
     end
-    response 200, "OK", Schema.ref(:participations)
+    response 200, "OK", Schema.array(:"candidate")
     response 400, "Error"
   end
 
@@ -38,7 +38,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     parameters do
       project_id :path, :integer, "Project id", required: true
     end
-    response 200, "OK", Schema.ref(:participations)
+    response 200, "OK", Schema.array(:"user")
     response 400, "Error"
   end
 
@@ -55,7 +55,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     parameters do
       project_id :path, :integer, "Project id", required: true
     end
-    response 200, "OK", Schema.ref(:participations)
+    response 200, "OK", Schema.ref(:participation_list)
     response 400, "Error"
   end
 
@@ -149,39 +149,32 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
 
   swagger_path :list_votes do
     summary "Retrieve a list of the current participations votes"
+    description """
+    Since the kind of votes are dependent on the participation role, the votes are contained in field which schema is dependent on another fields value.
+    See [Composition and Inheritance](https://swagger.io/specification/v2/).
+    """
     tag "Current Participation"
     produces "application/json"
     parameters do
       project_id :path, :integer, "Project id", required: true
     end
     response 404, "User has no participation"
-    response 200, "OK"
+    response 200, "OK", Schema.ref(:votes_container)
   end
 
   def list_votes(conn, _params) do
     if participation = conn.assigns[:participation] do
+      votes = Participations.get_votes(participation)
       conn
+      |> assign(:votes, votes)
       |> render_votes(participation)
     else
       send_resp(conn, 404, "")
     end
   end
 
-  def render_votes(conn, %Participations.UserParticipation{} = participation) do
-    votes = Participations.get_votes(participation)
-
-    conn
-    |> assign(:users, votes)
-    |> render("users.json")
-  end
-
-  def render_votes(conn, %Participations.CandidateParticipation{} = participation) do
-    votes = Participations.get_votes(participation)
-
-    conn
-    |> assign(:tickets, votes)
-    |> render("tickets.json")
-  end
+  defp render_votes(conn, %Participations.UserParticipation{}), do: render(conn, "votes_participations.json")
+  defp render_votes(conn, %Participations.CandidateParticipation{}), do: render(conn, "votes_tickets.json")
 
   def swagger_definitions do
     %{
@@ -212,7 +205,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
           Schema.ref(:participation)
         ]
       end,
-      participations: swagger_schema do
+      participation_list: swagger_schema do
         title "Participations"
         description "A collection of participations"
         type :array
@@ -223,6 +216,36 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
         title "Role"
         enum ["user", "candidate"]
       end,
+      votes_container: swagger_schema do
+        title "Votes"
+        discriminator "type"
+        properties do
+          type ref(:votes_type), "Type"
+        end
+      end,
+      votes_type: swagger_schema do
+        type :string
+        title "Type of votes"
+        enum ["participations", "tickets"]
+      end,
+      "tickets": swagger_schema do
+        title "Vote container for Tickets"
+        all_of [
+          Schema.ref(:votes_container),
+          Schema.new do
+            property :votes, Schema.ref(:ticket_list), "Votes"
+          end
+        ]
+      end,
+      "participations": swagger_schema do
+        title "Vote container for participations"
+        all_of [
+          Schema.ref(:votes_container),
+          Schema.new do
+            property :votes, Schema.ref(:participation_list), "Votes"
+          end
+        ]
+      end
     }
   end
 end
