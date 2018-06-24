@@ -6,12 +6,14 @@ defmodule ExVoteWeb.Api.UserController do
 
   swagger_path :login do
     summary "User login"
-    description "Returns an authentication token"
+    description "Authenticates a user"
+    tag "Users"
     security []
+    produces "application/json"
     parameters do
       body :body, Schema.ref(:user_login), "User Login", required: true
     end
-    response 200, "OK"
+    response 200, "OK", Schema.ref(:token_container)
     response 400, "Login failed"
   end
 
@@ -31,8 +33,10 @@ defmodule ExVoteWeb.Api.UserController do
   end
 
   swagger_path :token_test do
-    summary "Token test"
+    summary "Test authentication"
     description "Tests the token present in the authorization header"
+    tag "Users"
+    produces "text/plain"
     response 200, "OK"
     response 401, "Authentication required"
   end
@@ -48,6 +52,13 @@ defmodule ExVoteWeb.Api.UserController do
         description "Informations to perform a login"
         properties do
           name :string, "Username", required: true
+        end
+      end,
+      token_container: swagger_schema do
+        title "Token"
+        description "Contains the authentication token"
+        properties do
+          token :string, "Token"
         end
       end
     }

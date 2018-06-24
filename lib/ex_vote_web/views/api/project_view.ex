@@ -26,6 +26,10 @@ defmodule ExVoteWeb.Api.ProjectView do
     Enum.map(tickets, &ticket_json/1)
   end
 
+  def render("users.json", %{:users => users}) do
+    Enum.map(users, &user_json/1)
+  end
+
   def render("error.json", %{:changeset => changeset}) do
     errors =
       changeset
@@ -79,6 +83,13 @@ defmodule ExVoteWeb.Api.ProjectView do
     else
       json
     end
+  end
+
+  defp user_json(%ExVote.Accounts.User{} = user) do
+    %{
+      id: user.id,
+      name: user.name
+    }
   end
 
 end

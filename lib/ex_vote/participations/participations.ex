@@ -82,6 +82,7 @@ defmodule ExVote.Participations do
     |> Repo.update()
   end
 
+  @deprecated "Use get_votes/1 instead"
   def get_candidate_votes(%CandidateParticipation{:id => participation_id}) do
     query = from pt in ParticipationTicket,
       where: pt.participation_id == ^participation_id,
@@ -89,6 +90,24 @@ defmodule ExVote.Participations do
 
     query
     |> Repo.all()
+  end
+
+  def get_votes(%CandidateParticipation{:id => participation_id}) do
+    query = from pt in ParticipationTicket,
+      where: pt.participation_id == ^participation_id,
+      left_join: t in assoc(pt, :ticket),
+      preload: [ticket: t]
+
+    query
+    |> Repo.all()
+    |> Enum.map(fn %{:ticket => ticket} -> ticket end)
+  end
+
+  def get_votes(%UserParticipation{} = participation) do
+    participation
+    |> Repo.preload(:vote_user)
+    |> Map.get(:vote_user)
+    |> List.wrap()
   end
 
   def add_candidate_vote(attrs \\ %{}) do
@@ -131,4 +150,6 @@ defmodule ExVote.Participations do
   def delete_candidate_vote(id) do
     Repo.delete(%ParticipationTicket{id: id})
   end
+
+
 end

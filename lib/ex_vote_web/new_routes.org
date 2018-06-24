@@ -29,7 +29,7 @@
    | GET    | /projects/:project_id/my_participation |
    | POST   | /projects/:project_id/my_participation |
    | PUT    | /projects/:project_id/my_participation |
-  - [ ] Votes (???)
+  - [ ] Votes
    | Method | URL                                          |
    |--------+----------------------------------------------|
    | GET    | /projects/:project_id/my_participation/votes |

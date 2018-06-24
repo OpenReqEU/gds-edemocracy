@@ -65,6 +65,7 @@ defmodule ExVoteWeb.Router do
         get "/:project_id/my_participation", Api.ProjectController, :show_current_participation
         post "/:project_id/my_participation", Api.ProjectController, :create_current_participation
         put "/:project_id/my_participation", Api.ProjectController, :update_current_participation
+        get "/:project_id/my_participation/votes", Api.ProjectController, :list_votes
         # post "/:project_id/join", Api.ProjectController, :join
         # post "/:project_id/changerole", Api.ProjectController, :change_role
       end
@@ -75,12 +76,44 @@ defmodule ExVoteWeb.Router do
     forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :ex_vote, swagger_file: "swagger.json"
   end
 
+  scope "/api/redoc" do
+    get "/", ExVoteWeb.Api.RedocController, :index
+  end
+
   def swagger_info do
     %{
       info: %{
         version: "1.0",
         title: "ExVote API"
       },
+      tags: [
+        %{
+          name: "Projects",
+          description: """
+          A project contains all informations belonging to the lifecycle of a participation project. This resource is also the base of all participation endpoints.
+
+          For further informations regarding participations see [Project Participations](#tag/Project-Participations) and [Current Participation](#tag/Current-Participation).
+          """
+        },
+        %{
+          name: "Users",
+          description: "Mainly for login purposes"
+        },
+        %{
+          name: "Project Participations",
+          description: """
+          A Project Participation is a participation belonging to a certain project. A Participation is unique per user and project and is the main primitve in the voting process.
+
+          For the users participation in the selected project see [Current Participation](#tag/Current-Participation).
+          """
+        },
+        %{
+          name: "Current Participation",
+          description: """
+          The Current Participation describes the unique participation of the authenticated user in the selected project.
+          """
+        }
+      ],
       securityDefinitions: %{
         ApiKey: %{
           type: "apiKey",
