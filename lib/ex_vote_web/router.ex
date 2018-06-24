@@ -53,21 +53,17 @@ defmodule ExVoteWeb.Router do
     scope "/projects" do
       resources "/", Api.ProjectController, only: [:index, :show, :create], param: "project_id"
       get "/:project_id/tickets", Api.ProjectController, :list_tickets
-      get "/:project_id/participations", Api.ProjectController, :list_participations
-      get "/:project_id/participations/candidates", Api.ProjectController, :list_candidates
-      get "/:project_id/participations/users", Api.ProjectController, :list_users
-      # post "/:id/candidates/vote", Api.ProjectController, :vote_candidate
-      # post "/:id/tickets/vote", Api.ProjectController, :vote_ticket
+      get "/:project_id/participations", Api.ProjectParticipationController, :list_participations
+      get "/:project_id/participations/candidates", Api.ProjectParticipationController, :list_candidates
+      get "/:project_id/participations/users", Api.ProjectParticipationController, :list_users
 
       scope "/" do
         pipe_through :api_auth
 
-        get "/:project_id/my_participation", Api.ProjectController, :show_current_participation
-        post "/:project_id/my_participation", Api.ProjectController, :create_current_participation
-        put "/:project_id/my_participation", Api.ProjectController, :update_current_participation
-        get "/:project_id/my_participation/votes", Api.ProjectController, :list_votes
-        # post "/:project_id/join", Api.ProjectController, :join
-        # post "/:project_id/changerole", Api.ProjectController, :change_role
+        get "/:project_id/my_participation", Api.ProjectParticipationController, :show_current_participation
+        post "/:project_id/my_participation", Api.ProjectParticipationController, :create_current_participation
+        put "/:project_id/my_participation", Api.ProjectParticipationController, :update_current_participation
+        get "/:project_id/my_participation/votes", Api.ProjectParticipationController, :list_votes
       end
     end
   end
