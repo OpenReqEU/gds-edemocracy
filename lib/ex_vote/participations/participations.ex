@@ -76,10 +76,34 @@ defmodule ExVote.Participations do
     |> Repo.insert()
   end
 
+  @deprecated "Use update_votes/2 instead"
   def update_vote(%UserParticipation{} = participation, attrs) do
     participation
     |> UserParticipation.changeset_update_vote(attrs)
     |> Repo.update()
+  end
+
+  def update_votes(%UserParticipation{} = participation, attrs) do
+    data = %{}
+    types = %{votes: {:array, :integer}}
+
+    votes_changeset = {data, types}
+    |> Ecto.Changeset.cast(attrs, [:votes])
+    |> Ecto.Changeset.validate_required(:votes)
+    |> Ecto.Changeset.validate_length(:votes, is: 1, message: "must have exactly one item")
+
+    case Ecto.Changeset.apply_action(votes_changeset, :update) do
+      {:ok, %{:votes => [vote]}} ->
+        participation
+        |> UserParticipation.changeset_update_vote(%{vote_user_id: vote})
+        |> Repo.update()
+      error ->
+        error
+    end
+  end
+
+  def update_votes(%CandidateParticipation{} = participation, attrs) do
+
   end
 
   @deprecated "Use get_votes/1 instead"

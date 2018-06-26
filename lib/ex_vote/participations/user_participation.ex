@@ -50,8 +50,8 @@ defmodule ExVote.Participations.UserParticipation do
     participation
     |> cast(attrs, [:role, :vote_user_id])
     |> validate_required([:vote_user_id])
+    |> foreign_key_constraint(:vote_user_id)
     |> validate_role()
-    |> assoc_constraint(:vote_user)
   end
 
   @doc false

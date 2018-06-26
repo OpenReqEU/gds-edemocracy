@@ -173,7 +173,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     end
   end
 
-  defp render_votes(conn, %Participations.UserParticipation{}), do: render(conn, "votes_participations.json")
+  defp render_votes(conn, %Participations.UserParticipation{}), do: render(conn, "votes_users.json")
   defp render_votes(conn, %Participations.CandidateParticipation{}), do: render(conn, "votes_tickets.json")
 
   def swagger_definitions do

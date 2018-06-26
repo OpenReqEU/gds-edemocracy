@@ -11,10 +11,10 @@ defmodule ExVoteWeb.Api.ProjectParticipationView do
     Enum.map(participations, &participation_json/1)
   end
 
-  def render("votes_participations.json", %{:votes => votes}) do
+  def render("votes_users.json", %{:votes => votes}) do
     %{
       type: "participations",
-      votes: Enum.map(votes, &participation_json/1)
+      votes: Enum.map(votes, &user_json/1)
     }
   end
 
@@ -47,6 +47,13 @@ defmodule ExVoteWeb.Api.ProjectParticipationView do
       id: ticket.id,
       title: ticket.title,
       url: ticket.url
+    }
+  end
+
+  defp user_json(user) do
+    %{
+      id: user.id,
+      name: user.name
     }
   end
 end
