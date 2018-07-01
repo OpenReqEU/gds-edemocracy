@@ -64,6 +64,7 @@ defmodule ExVoteWeb.Router do
         post "/:project_id/my_participation", Api.ProjectParticipationController, :create_current_participation
         put "/:project_id/my_participation", Api.ProjectParticipationController, :update_current_participation
         get "/:project_id/my_participation/votes", Api.ProjectParticipationController, :list_votes
+        put "/:project_id/my_participation/votes", Api.ProjectParticipationController, :update_votes
       end
     end
   end
@@ -98,7 +99,7 @@ defmodule ExVoteWeb.Router do
         %{
           name: "Project Participations",
           description: """
-          A Project Participation is a participation belonging to a certain project. A Participation is unique per user and project and is the main primitve in the voting process.
+          A Project Participation is a participation belonging to a certain project. A Participation is unique per user and project and is the main primitive in the voting process.
 
           For the users participation in the selected project see [Current Participation](#tag/Current-Participation).
           """
@@ -107,6 +108,15 @@ defmodule ExVoteWeb.Router do
           name: "Current Participation",
           description: """
           The Current Participation describes the unique participation of the authenticated user in the selected project.
+
+          A Participation may be one of two different types, which influences the indiviual voting process:
+
+          - user:
+          Votes on a single candidate during the first project phase.
+
+          - candidate:
+          Votes on none or multiple tickets during the second project phase.
+
           """
         }
       ],

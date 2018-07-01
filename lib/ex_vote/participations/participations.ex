@@ -92,18 +92,59 @@ defmodule ExVote.Participations do
     |> Ecto.Changeset.validate_required(:votes)
     |> Ecto.Changeset.validate_length(:votes, is: 1, message: "must have exactly one item")
 
+    with {:ok, %{:votes => [vote]}} <- Ecto.Changeset.apply_action(votes_changeset, :update),
+         changeset <- UserParticipation.changeset_update_vote(participation, %{vote_user_id: vote}),
+         {:ok, new_participation} <- Repo.update(changeset) do
+      {:ok, get_votes(new_participation)}
+    end
+  end
+
+  def update_votes(%CandidateParticipation{} = participation, attrs) do
+    data = %{}
+    types = %{votes: {:array, :integer}}
+
+    votes_changeset = {data, types}
+    |> Ecto.Changeset.cast(attrs, [:votes])
+    |> Ecto.Changeset.validate_required(:votes)
+
     case Ecto.Changeset.apply_action(votes_changeset, :update) do
-      {:ok, %{:votes => [vote]}} ->
-        participation
-        |> UserParticipation.changeset_update_vote(%{vote_user_id: vote})
-        |> Repo.update()
+      {:ok, %{:votes => vote_ids}} ->
+        current_vote_ids =
+          get_votes(participation)
+          |> Enum.map(fn %{:id => id} -> id end)
+
+        vote_ids = Enum.uniq(vote_ids)
+        diff = List.myers_difference(current_vote_ids, vote_ids)
+
+        with delete_ids <- Keyword.get(diff, :del, []),
+             create_ids <- Keyword.get(diff, :ins, []),
+             _ <- delete_participation_tickets(delete_ids),
+             {:ok, _transaction_result} <- create_participation_tickets(create_ids, participation.id) do
+          {:ok, get_votes(participation)}
+        else
+          {:error, _id, changeset, _changes} -> {:error, changeset}
+        end
       error ->
         error
     end
   end
 
-  def update_votes(%CandidateParticipation{} = participation, attrs) do
+  defp delete_participation_tickets(ticket_ids) do
+    query = from pt in ParticipationTicket,
+      where: pt.ticket_id in ^ticket_ids
 
+    Repo.delete_all(query)
+  end
+
+  defp create_participation_tickets(ticket_ids, participation_id) do
+    participation_ticket_attrs = Enum.map(ticket_ids, &(%{ticket_id: &1, participation_id: participation_id}))
+    transaction = Enum.reduce(participation_ticket_attrs, Ecto.Multi.new(), fn
+      (%{:ticket_id => id} = attrs, transaction) ->
+        changeset = ParticipationTicket.changeset_create(%ParticipationTicket{}, attrs)
+        Ecto.Multi.insert(transaction, Integer.to_string(id), changeset)
+    end)
+
+    Repo.transaction(transaction)
   end
 
   @deprecated "Use get_votes/1 instead"

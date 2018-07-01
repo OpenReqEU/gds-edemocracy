@@ -61,6 +61,12 @@ defmodule ExVote.Participations.CandidateParticipation do
     end
   end
 
+  def changeset_update_votes(participation, attrs) do
+    participation
+    |> cast(attrs, [])
+    |> cast_assoc(:votes, required: true)
+  end
+
   defp validate_role(changeset) do
     validate_change(changeset, :role, fn
       :role, "candidate" -> []
