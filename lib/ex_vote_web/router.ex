@@ -60,11 +60,11 @@ defmodule ExVoteWeb.Router do
       scope "/" do
         pipe_through :api_auth
 
-        get "/:project_id/my_participation", Api.ProjectParticipationController, :show_current_participation
-        post "/:project_id/my_participation", Api.ProjectParticipationController, :create_current_participation
-        put "/:project_id/my_participation", Api.ProjectParticipationController, :update_current_participation
-        get "/:project_id/my_participation/votes", Api.ProjectParticipationController, :list_votes
-        put "/:project_id/my_participation/votes", Api.ProjectParticipationController, :update_votes
+        get "/:project_id/participations/current", Api.ProjectParticipationController, :show_current_participation
+        post "/:project_id/participations/current", Api.ProjectParticipationController, :create_current_participation
+        put "/:project_id/participations/current", Api.ProjectParticipationController, :update_current_participation
+        get "/:project_id/participations/current/votes", Api.ProjectParticipationController, :list_votes
+        put "/:project_id/participations/current/votes", Api.ProjectParticipationController, :update_votes
       end
     end
   end
