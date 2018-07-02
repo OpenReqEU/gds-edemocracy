@@ -25,7 +25,16 @@ Navigate to http://localhost:4000 to view the application.
 
 ## API
 
-The API is documented via the OpenAPI specification. There is a Swagger webinterface included at http://localhost:4000/api/swagger
+The API is documented via the OpenAPI v2 specification.
+
+There are two documentation interfaces included at `/api/swagger` and `/api/redoc` respectivly:
+
+- Swagger:
+  Due to not supporting discriminator fields and markdown syntax, this endpoint should be seen as the "playground".
+  Here you should test your requests and can view the response in the same interface.
+
+- ReDoc:
+  API documentation and data schemas can be found here.
 
 ## Seeded Data
 
