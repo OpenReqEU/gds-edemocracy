@@ -31,6 +31,9 @@
     <thead>
       <tr>
         <th>Title</th>
+        <%= if Enum.any?(@project.tickets, fn ticket -> ticket.description end) do %>
+          <th>Description</th>
+        <% end %>
       </tr>
     </thead>
     <tbody>
@@ -43,6 +46,11 @@
             <span><%= ticket.title %></span>
           <% end %>
         </td>
+        <%= if ticket.description do %>
+          <td>
+            <span><%= ticket.description %></span>
+          </td>
+        <% end %>
       </tr>
       <% end %>
     </tbody>

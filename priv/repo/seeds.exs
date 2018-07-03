@@ -13,7 +13,7 @@
 import ExVote.Seeder
 
 users = for _ <- 1..5, do: create_user()
-projects = create_proposal_projects()
+projects = [create_openreq_project() | create_proposal_projects()]
 
 guest = create_user("guest")
 user = create_user("user")

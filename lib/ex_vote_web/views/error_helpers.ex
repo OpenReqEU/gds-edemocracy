@@ -63,4 +63,14 @@ defmodule ExVoteWeb.ErrorHelpers do
 
   def error_message_json(message), do: message
 
+  def render_changeset_errors(changeset) do
+    errors =
+      changeset
+      |> Ecto.Changeset.traverse_errors(fn {msg, _opts} -> msg end)
+
+    %{
+      errors: Enum.map(errors, &error_json/1)
+    }
+  end
+
 end

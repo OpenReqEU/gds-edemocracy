@@ -1,6 +1,8 @@
 defmodule ExVoteWeb.Api.ProjectView do
   use ExVoteWeb, :view
 
+  def render("error.json", %{:changeset => changeset}), do: render_changeset_errors(changeset)
+
   def render("index.json", %{:projects => projects}) do
     Enum.map(projects, &short_project_json/1)
   end
@@ -14,26 +16,12 @@ defmodule ExVoteWeb.Api.ProjectView do
     }
   end
 
-  def render("participation.json", %{:participation => participation}) do
-    participation_json(participation)
-  end
-
-  def render("candidates.json", %{:candidates => candidates}) do
-    Enum.map(candidates, &participation_json/1)
-  end
-
   def render("tickets.json", %{:tickets => tickets}) do
     Enum.map(tickets, &ticket_json/1)
   end
 
-  def render("error.json", %{:changeset => changeset}) do
-    errors =
-      changeset
-      |> Ecto.Changeset.traverse_errors(fn {msg, _opts} -> msg end)
-
-    %{
-      errors: Enum.map(errors, &error_json/1)
-    }
+  def render("users.json", %{:users => users}) do
+    Enum.map(users, &user_json/1)
   end
 
   defp short_project_json(%ExVote.Projects.Project{} = project) do
@@ -47,26 +35,17 @@ defmodule ExVoteWeb.Api.ProjectView do
   defp ticket_json(ticket) do
     %{
       id: ticket.id,
+      external_id: ticket.external_id,
       title: ticket.title,
+      description: ticket.description,
       url: ticket.url
     }
   end
 
-  defp participation_json(%ExVote.Participations.UserParticipation{} = participation) do
+  defp user_json(%ExVote.Accounts.User{} = user) do
     %{
-      project_id: participation.project_id,
-      user_id: participation.user_id,
-      role: participation.role
+      id: user.id,
+      name: user.name
     }
   end
-
-  defp participation_json(%ExVote.Participations.CandidateParticipation{} = participation) do
-    %{
-      project_id: participation.project_id,
-      user_id: participation.user_id,
-      role: participation.role,
-      candidate_summary: participation.candidate_summary
-    }
-  end
-
 end

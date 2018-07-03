@@ -7,6 +7,8 @@ defmodule ExVote.Participations.CandidateParticipation do
   alias ExVote.Accounts
   alias ExVote.Participations
 
+  @unique_constraint_message "Participation already exists"
+
   schema "participations" do
     field :role, :string
     field :candidate_summary
@@ -21,7 +23,11 @@ defmodule ExVote.Participations.CandidateParticipation do
     |> cast(attrs, [:role, :candidate_summary, :project_id, :user_id])
     |> validate_required([:role, :candidate_summary, :project_id, :user_id])
     |> validate_role()
-    |> unique_constraint(:project_id, name: :index_unique_participations)
+    |> unique_constraint(
+      :project_id,
+      name: :index_unique_participations,
+      message: @unique_constraint_message
+    )
     |> assoc_constraint(:project)
     |> assoc_constraint(:user)
   end
@@ -29,10 +35,14 @@ defmodule ExVote.Participations.CandidateParticipation do
   @doc false
   def changeset_update(participation, attrs) do
     participation
-    |> cast(attrs, [:role, :candidate_summary, :project_id, :user_id])
-    |> validate_required([:role, :candidate_summary, :project_id, :user_id])
+    |> cast(attrs, [:role, :candidate_summary])
+    |> validate_required([:role, :candidate_summary])
     |> validate_role()
-    |> unique_constraint(:project_id, name: :index_unique_participations)
+    |> unique_constraint(
+      :project_id,
+      name: :index_unique_participations,
+      message: @unique_constraint_message
+    )
     |> assoc_constraint(:project)
     |> assoc_constraint(:user)
   end
@@ -49,6 +59,12 @@ defmodule ExVote.Participations.CandidateParticipation do
     else
       changeset
     end
+  end
+
+  def changeset_update_votes(participation, attrs) do
+    participation
+    |> cast(attrs, [])
+    |> cast_assoc(:votes, required: true)
   end
 
   defp validate_role(changeset) do
