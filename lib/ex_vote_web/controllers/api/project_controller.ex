@@ -131,8 +131,10 @@ defmodule ExVoteWeb.Api.ProjectController do
         description "A single ticket"
         properties do
           id :number, "Ticket id (readonly)"
+          external_id :number, "ID on external system"
           title :string, "Ticket title", required: true
-          url :string, "URL to the bugtracker", required: true, format: "url"
+          description :string, "Description"
+          url :string, "URL to the bugtracker", format: "url"
         end
       end,
       ticket_list: swagger_schema do

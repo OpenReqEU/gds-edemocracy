@@ -45,7 +45,9 @@ defmodule ExVoteWeb.Api.ProjectParticipationView do
   defp ticket_json(ticket) do
     %{
       id: ticket.id,
+      external_id: ticket.external_id,
       title: ticket.title,
+      description: ticket.description,
       url: ticket.url
     }
   end
