@@ -42,7 +42,8 @@ defmodule ExVote.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:timex, "~> 3.1"},
-      {:phoenix_swagger, "~> 0.8"}
+      {:phoenix_swagger, "~> 0.8"},
+      {:httpoison, "~> 1.0"}
     ]
   end
 
