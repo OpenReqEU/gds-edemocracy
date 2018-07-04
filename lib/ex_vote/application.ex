@@ -13,7 +13,8 @@ defmodule ExVote.Application do
       {Registry, keys: :unique, name: ExVote.Phases.ProjectPhasesRegistry},
       {DynamicSupervisor, strategy: :one_for_one, name: ExVote.Phases.ProjectPhasesSupervisor},
       # Projects
-      ExVote.Projects.PhaseServerLoader
+      ExVote.Projects.PhaseServerLoader,
+      ExVote.Projects.OpenreqFetcher
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

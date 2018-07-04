@@ -224,36 +224,6 @@ defmodule ExVote.Seeder do
     end)
   end
 
-  def create_openreq_project do
-    now = utc_now()
-
-    project = %{
-      phase_candidates: now,
-      phase_end: add(now, 60 * 60 * 24 * 7),
-      title: "OpenREQ",
-      tickets: [
-        %{
-          external_id: 385,
-          title: "Dashboard for requirements analytics",
-          description: "Visualize the result of the requirements analytics on a configurable dashboard",
-        },
-        %{
-          external_id: 386,
-          title: "Integrate with marketing tools",
-          description: "The results of the requirements analytics shall be integrated into upstream tools for marketing",
-        },
-        %{
-          external_id: 384,
-          title: "Analyze customer tickets system",
-          description: "Anonymized customer tickets shall be analyzed for predicting escalation",
-        }
-      ]
-    }
-
-    {:ok, project} = Projects.create_project(project)
-    project
-  end
-
   defp ticket do
     %{
       title: Enum.random(@titles),
