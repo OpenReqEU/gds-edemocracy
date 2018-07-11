@@ -42,6 +42,7 @@ defmodule ExVoteWeb.Router do
 
     scope "/users" do
       post "/login", Api.UserController, :login
+      post "/register", Api.UserController, :register
 
       scope "/" do
         pipe_through :api_auth

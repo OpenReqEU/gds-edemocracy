@@ -44,6 +44,33 @@ defmodule ExVoteWeb.Api.UserController do
     text(conn, "ok")
   end
 
+  swagger_path :register do
+    summary "Registers a user"
+    security []
+    description "Registers a new user in the ExVote application"
+    produces "application/json"
+    parameters do
+      body :body, Schema.ref(:user_login), "New user", required: true
+    end
+    tag "Users"
+    response 200, "OK", Schema.ref(:new_user)
+    response 400, "Error"
+  end
+  def register(conn, params) do
+    case Accounts.create_user(params) do
+      {:ok, user} ->
+        conn
+        |> assign(:user, user)
+        |> render("register.json")
+
+      {:error, changeset} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> put_status(400)
+        |> render("error.json")
+    end
+  end
+
   def swagger_definitions do
     %{
       user_login: swagger_schema do
@@ -58,6 +85,13 @@ defmodule ExVoteWeb.Api.UserController do
         description "Contains the authentication token"
         properties do
           token :string, "Token"
+        end
+      end,
+      new_user: swagger_schema do
+        title "User"
+        properties do
+          id :number, "User ID"
+          name :string, "Username"
         end
       end
     }
