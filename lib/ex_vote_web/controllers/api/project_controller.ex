@@ -35,6 +35,27 @@ defmodule ExVoteWeb.Api.ProjectController do
     response 404, "Not found"
   end
 
+  swagger_path :report do
+    summary "Generate a report"
+    tag "Projects"
+    security []
+    produces "application/json"
+    parameters do
+      project_id :path, :integer, "ID of project", required: true
+    end
+    response 200, "OK", Schema.ref(:report)
+    response 404, "Not found"
+  end
+  def report(conn, _params) do
+    report =
+      conn.assigns[:project]
+      |> Projects.Reporting.generate_report()
+
+    conn
+    |> assign(:report, report)
+    |> render("report.json")
+  end
+
   def show(conn, _params) do
     project =
       conn.assigns[:project]
@@ -147,6 +168,51 @@ defmodule ExVoteWeb.Api.ProjectController do
         type :string
         title "Phase"
         enum ["phase_users", "phase_candidates", "phase_end"]
+      end,
+      report: swagger_schema do
+        title "Report"
+        properties do
+          schedule (Schema.new do
+                     properties do
+                       current_phase ref(:phase), "Current Phase"
+                       phase_candidates_at :string, "The begin of the second phase", format: "date-time"
+                       phase_start :string, "The begin of the project lifetime", format: "date-time"
+                       project_end :string, "The end date of the project", format: "date-time"
+                     end
+          end)
+          participations (Schema.new do
+                           properties do
+                             users :number, "The amount of users participating"
+                             candidates :number, "The amount of canidates participating"
+                             users_voted :number, "The amount of users that have voted"
+                             candidates_voted :number, "The amount of candidates that have voted"
+                           end
+          end)
+          votes (Schema.new do
+                  properties do
+                    candidates Schema.array(:report_votes_candidates), "All candidates ordered by votes received"
+                    tickets Schema.array(:report_votes_tickets), "All tickets ordered by votes received"
+                  end
+          end)
+        end
+      end,
+      report_votes_candidates: swagger_schema do
+        properties do
+          candidate ref(:report_user), "The candidate"
+          votes_received :number, "The amount of votes received"
+        end
+      end,
+      report_user: swagger_schema do
+        properties do
+          id :number, "User ID"
+          name :string, "Username"
+        end
+      end,
+      report_votes_tickets: swagger_schema do
+        properties do
+          ticket ref(:ticket), "The ticket"
+          votes_received :number, "The amount of votes received"
+        end
       end
     }
   end

@@ -52,6 +52,7 @@ defmodule ExVoteWeb.Router do
 
     scope "/projects" do
       resources "/", Api.ProjectController, only: [:index, :show, :create], param: "project_id"
+      get "/:project_id/report", Api.ProjectController, :report
       get "/:project_id/tickets", Api.ProjectController, :list_tickets
       get "/:project_id/participations", Api.ProjectParticipationController, :list_participations
       get "/:project_id/participations/candidates", Api.ProjectParticipationController, :list_candidates
