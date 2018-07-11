@@ -18,7 +18,11 @@ defmodule ExVote.Projects.OpenreqFetcher do
     Logger.debug("Adding OpenReq project to database...")
     {:ok, answer} = Poison.decode(body)
     project = create_project(answer)
-    {:ok, _project} = ExVote.Projects.create_project(project)
+    {:ok, project} = ExVote.Projects.create_project(project)
+
+    project
+    |> candidate_participation()
+    |> ExVote.Participations.create_participation()
   end
 
   defp create_project(answer) do
@@ -27,6 +31,16 @@ defmodule ExVote.Projects.OpenreqFetcher do
       phase_end: add(utc_now(), 60 * 60 * 24 * 7),
       title: "OpenReq",
       tickets: Enum.map(answer["requirements"], &to_ticket/1)
+    }
+  end
+
+  defp candidate_participation(%{id: project_id}) do
+    %{id: user_id} = ExVote.Accounts.find_user("candidate");
+    %{
+      user_id: user_id,
+      project_id: project_id,
+      role: "candidate",
+      candidate_summary: "Vote for me"
     }
   end
 
