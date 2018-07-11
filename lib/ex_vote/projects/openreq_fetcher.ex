@@ -11,11 +11,11 @@ defmodule ExVote.Projects.OpenreqFetcher do
   end
 
   def run do
-    Logger.debug("Fetching OpenREQ project...")
+    Logger.debug("Fetching OpenReq project...")
     HTTPoison.start()
 
     {:ok, %{body: body}} = HTTPoison.get(@url)
-    Logger.debug("Adding OpenREQ project to database...")
+    Logger.debug("Adding OpenReq project to database...")
     {:ok, answer} = Poison.decode(body)
     project = create_project(answer)
     {:ok, _project} = ExVote.Projects.create_project(project)
@@ -25,7 +25,7 @@ defmodule ExVote.Projects.OpenreqFetcher do
     %{
       phase_candidates: utc_now(),
       phase_end: add(utc_now(), 60 * 60 * 24 * 7),
-      title: "OpenREQ",
+      title: "OpenReq",
       tickets: Enum.map(answer["requirements"], &to_ticket/1)
     }
   end
