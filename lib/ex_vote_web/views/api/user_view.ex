@@ -8,4 +8,11 @@ defmodule ExVoteWeb.Api.UserView do
       token: token
     }
   end
+
+  def render("register.json", %{:user => user}) do
+    %{
+      id: user.id,
+      name: user.name
+    }
+  end
 end

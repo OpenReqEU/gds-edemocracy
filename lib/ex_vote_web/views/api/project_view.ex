@@ -16,6 +16,36 @@ defmodule ExVoteWeb.Api.ProjectView do
     }
   end
 
+  def render("report.json", %{:report => report}) do
+    report = Map.from_struct(report)
+
+    {_, report} =
+      report
+      |> get_and_update_in([:votes, :candidates], fn votes ->
+        new_votes =
+          votes
+          |> Enum.map(fn %{candidate: user} = container ->
+            %{container | candidate: user_json(user)}
+          end)
+
+        {votes, new_votes}
+      end)
+
+    {_, report} =
+      report
+      |> get_and_update_in([:votes, :tickets], fn votes ->
+        new_votes =
+          votes
+          |> Enum.map(fn %{ticket: ticket} = container ->
+            %{container | ticket: ticket_json(ticket)}
+          end)
+
+        {votes, new_votes}
+      end)
+
+    report
+  end
+
   def render("tickets.json", %{:tickets => tickets}) do
     Enum.map(tickets, &ticket_json/1)
   end
