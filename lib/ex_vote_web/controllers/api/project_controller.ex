@@ -23,6 +23,31 @@ defmodule ExVoteWeb.Api.ProjectController do
     |> render("index.json")
   end
 
+  swagger_path :report do
+    summary "Generate a report"
+    tag "Projects"
+    security []
+    produces "application/json"
+    parameters do
+      project_id :path, :integer, "ID of project", required: true
+    end
+    response 200, "OK", Schema.ref(:report)
+    response 404, "Not found"
+  end
+
+  def report(conn, _params) do
+    with project when not is_nil(project) <- conn.assigns[:project],
+         report <- Projects.Reporting.generate_report(project) do
+      conn
+      |> assign(:report, report)
+      |> render("report.json")
+    else
+      nil ->
+        conn
+        |> send_resp(404, "")
+    end
+  end
+
   swagger_path :show do
     summary "Retrieve a project"
     tag "Projects"
@@ -35,26 +60,6 @@ defmodule ExVoteWeb.Api.ProjectController do
     response 404, "Not found"
   end
 
-  swagger_path :report do
-    summary "Generate a report"
-    tag "Projects"
-    security []
-    produces "application/json"
-    parameters do
-      project_id :path, :integer, "ID of project", required: true
-    end
-    response 200, "OK", Schema.ref(:report)
-    response 404, "Not found"
-  end
-  def report(conn, _params) do
-    report =
-      conn.assigns[:project]
-      |> Projects.Reporting.generate_report()
-
-    conn
-    |> assign(:report, report)
-    |> render("report.json")
-  end
 
   def show(conn, _params) do
     project =
@@ -212,6 +217,7 @@ defmodule ExVoteWeb.Api.ProjectController do
         properties do
           ticket ref(:ticket), "The ticket"
           votes_received :number, "The amount of votes received"
+          voted_by Schema.array(:number), "Array of user id of candidates who voted for this ticket"
         end
       end
     }
