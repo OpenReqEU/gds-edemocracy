@@ -18,7 +18,7 @@ defmodule ExVoteWeb.UserController do
         conn
         |> put_session(:user, user)
         |> put_flash(:info, "Login success!")
-        |> redirect(to: "/")
+        |> redirect(to: project_path(conn, :index))
       {:error, changeset} ->
         conn
         |> assign(:changeset, changeset)
@@ -29,6 +29,7 @@ defmodule ExVoteWeb.UserController do
   def logout(conn, _params) do
     conn
     |> delete_session(:user)
-    |> redirect(to: "/")
+		|> put_flash(:info, "Logout successful")
+    |> redirect(to: project_path(conn, :index))
   end
 end
