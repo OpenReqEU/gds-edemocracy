@@ -1,8 +1,10 @@
 defmodule ExVote.Projects.Reporting do
-  alias ExVote.Projects.Project
+  import Ecto.Query
+
+  alias ExVote.Projects.{Project, Ticket}
   alias ExVote.Projects.Reporting.Report
   alias ExVote.Participations
-  alias ExVote.Participations.{UserParticipation, CandidateParticipation}
+  alias ExVote.Participations.{UserParticipation, CandidateParticipation, ParticipationTicket}
   alias ExVote.Repo
 
   def generate_report(%Project{} = project) do
@@ -57,7 +59,18 @@ defmodule ExVote.Projects.Reporting do
   defp voted?(%CandidateParticipation{votes_candidate: votes}) when length(votes) === 0, do: false
   defp voted?(%CandidateParticipation{}), do: true
 
-  defp populate_votes(report, %{tickets: tickets}, %{users: users, candidates: candidates}) do
+  defp populate_votes(report, %{id: project_id, tickets: tickets}, %{users: users, candidates: candidates}) do
+
+    ticket_user_votes_query = from t in Ticket,
+      left_join: pt in ParticipationTicket, on: pt.ticket_id == t.id,
+      left_join: p in assoc(pt, :participation),
+      left_join: u in assoc(p, :user),
+      where: t.project_id == ^project_id and not is_nil(u.id),
+      select: {t.id, fragment("array_agg(?)", u.id)},
+      group_by: t.id
+
+    ticket_user_votes = Repo.all(ticket_user_votes_query)
+
     ticket_votes =
       candidates
       |> format_votes()
@@ -73,6 +86,11 @@ defmodule ExVote.Projects.Reporting do
     ticket_votes =
       ticket_votes
       |> Enum.concat(missing_ticket_votes)
+      |> Enum.map(fn %{ticket: %{id: ticket_id}} = vote_container ->
+          {_, voted_by} =
+            Enum.find(ticket_user_votes, {nil, []}, fn {id, _} -> id == ticket_id end)
+          Map.put(vote_container, :voted_by, voted_by)
+        end)
       |> Enum.sort(&compare_votes/2)
 
     candidate_votes =
@@ -105,8 +123,9 @@ defmodule ExVote.Projects.Reporting do
   defp accumulate_votes(%UserParticipation{vote_user: vote}, acc) when is_nil(vote), do: acc
   defp accumulate_votes(%UserParticipation{vote_user: vote}, acc), do: [vote | acc]
 
-  defp accumulate_votes(%CandidateParticipation{votes_candidate: votes}, acc),
-    do: Enum.map(votes, &Map.get(&1, :ticket)) ++ acc
+  defp accumulate_votes(%CandidateParticipation{votes_candidate: votes}, acc) do
+    Enum.map(votes, &Map.get(&1, :ticket)) ++ acc
+  end
 
   defp vote_container(type, value, votes) when is_list(votes),
     do: vote_container(type, value, length(votes))
