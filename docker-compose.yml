@@ -8,6 +8,9 @@ services:
       - "db"
     environment:
       MIX_ENV: docker
+      EXVOTE_PORT: 9750
+      EXVOTE_PATH: /
+      EXVOTE_HOST: localhost
   db:
     image: postgres
     environment:
