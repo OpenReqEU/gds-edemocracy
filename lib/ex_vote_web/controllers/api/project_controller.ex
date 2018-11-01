@@ -26,7 +26,7 @@ defmodule ExVoteWeb.Api.ProjectController do
 
   swagger_path :report do
     summary "Return a report for the status of a single participation project."
-    description "Returns a report containing information on the status of an existing project. The project must exist. Other values will generate an exception"
+    description "Return a report containing information on the status of an existing project. The project must exist. Other values will generate an exception"
     tag "Projects"
     security []
     produces "application/json"

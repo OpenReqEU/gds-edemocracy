@@ -16,11 +16,12 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   ]
 
   swagger_path :list_candidates do
-    summary "Retrieve a list of all participating candidates"
+    summary "Return a list of all participating candidates"
+    description "For an ongoing existing project, the list includes candidates participating in the project"
     tag "Project Participations"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.array(:"candidate")
     response 400, "Error"
@@ -33,11 +34,12 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   end
 
   swagger_path :list_users do
-    summary "Retrieve a list of all participating users"
+    summary "Return a list of all participating users"
+    description "For an ongoing existing project, the list includes users participating in the project"
     tag "Project Participations"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.array(:"user")
     response 400, "Error"
@@ -51,10 +53,11 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
 
   swagger_path :list_participations do
     summary "Retrieve a list of all participations"
+    description "For an ongoing existing project, the list includes all participants (users and candidates)"
     tag "Project Participations"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.ref(:participation_list)
     response 400, "Error"
@@ -73,11 +76,12 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   end
 
   swagger_path :show_current_participation do
-    summary "Retrieve the current participation"
+    summary "Retrieve the participation of the logged-in user in a project"
+    description "For an ongoing existing project, return the participation role of the current user (either user or candidate). Authorization is necessary."
     tag "Current Participation"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.ref(:participation)
     response 404, "User has no participation"
@@ -92,12 +96,12 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   end
 
   swagger_path :create_current_participation do
-    summary "Create the current participation"
-    description "Mental model: Joining a project"
+    summary "Create the participation of the logged-in user in the project"
+    description "For an ongoing existing project, creates a participation allowing the user currently logged-in to join the project. Authorization required."
     tag "Current Participation"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
       body :body, Schema.ref(:participation), "Participation", required: true
     end
     response 200, "OK", Schema.ref(:participation)
@@ -120,11 +124,12 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   end
 
   swagger_path :update_current_participation do
-    summary "Create or alter the current participation"
+    summary "Updates the logged-in user participation in a project"
+    description "For an existing ongoing project, allow the user to change its role. Authorization required. If updating a user to a candidate, a candidate_summary field should be passed in the body. If the participation does not exists, it will be created."
     tag "Current Participation"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
       body :body, Schema.ref(:participation), "Participation", required: true
     end
     response 200, "OK", Schema.ref(:participation)
@@ -149,15 +154,14 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   end
 
   swagger_path :list_votes do
-    summary "Retrieve a list of the current participations votes"
+    summary "Return the votes of the user currently logged in for a project"
     description """
-    The kind of votes are dependent on the participation role, hence the votes are contained in a variable schema, selected by the "type" field.
-    See [Composition and Inheritance](https://swagger.io/specification/v2/).
+    For an existing project, the votes depend on the role the user has when voting, either for a candidate or a ticket (requirement). This information is reported in the "type" field.  
     """
     tag "Current Participation"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 404, "User has no participation"
     response 200, "OK", Schema.ref(:votes_container)
@@ -178,18 +182,18 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   defp render_votes(conn, %Participations.CandidateParticipation{}), do: render(conn, "votes_tickets.json")
 
   swagger_path :update_votes do
-    summary "Update the current participations votes"
+    summary "Update the vote of the logged-in user for an ongoing participation project"
     description """
-    The id of each vote references different entities, based on the participation type.
+    For an existing ongoing project, the vote of the logged-in user is updated based on its current role. 
 
-    - user: References a candidate in the project by user_id (limited to exactly one element)
+    If participating as a user, the vote should contain exactly one element referencing the user_id of a candidate in the project (limited to exactly one element)
 
-    - candidate: References a ticket in the project by ticket_id
+    If participating as a candidate, the vote can contain several elements referencing the selected ticket_ids
     """
     tag "Current Participation"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
       body :body, Schema.ref(:votes), "Votes", required: true
     end
   end
@@ -214,56 +218,59 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     %{
       participation: swagger_schema do
         title "Participation"
-        description "Represents a participation in a project"
+        description "Represents the user participation in a project depending on its role"
         discriminator "role"
         properties do
-          project_id :number, "Project id (readonly)"
-          user_id :number, "User id (readonly)"
+          project_id :number, "Project ID (readonly)"
+          user_id :number, "User ID (readonly)"
           role ref(:role), "Role", required: true
         end
       end,
       "candidate": swagger_schema do
         title "candidate"
-        description "Candidate"
+        description "Participation for a candidate"
         all_of [
           Schema.ref(:participation),
           Schema.new do
-            property :candidate_summary, :string, "Summary text (only relevant for role: candidate)", required: true
+            property :candidate_summary, :string, "Candidate statement on its participation in the project (only relevant for role: candidate)", required: true
           end
         ]
       end,
       "user": swagger_schema do
         title "user"
-        description "user"
+        description "Participation for a user"
         all_of [
           Schema.ref(:participation)
         ]
       end,
       participation_list: swagger_schema do
         title "Participations"
-        description "A collection of participations"
+        description "A collection of users and candidates participating to a project"
         type :array
         items Schema.ref(:participation)
       end,
       role: swagger_schema do
         type :string
         title "Role"
+        description "The role of a participant in a project. Users vote for candidates. Candidates vote for tickets (requirements)."
         enum ["user", "candidate"]
       end,
       votes_container: swagger_schema do
         title "Votes"
+        description "Votes in a participation project."
         discriminator "type"
         properties do
           type ref(:votes_type), "Type"
         end
       end,
       votes_type: swagger_schema do
-        type :string
         title "Type of votes"
+        description "The type depends on whether the vote was casted by a user or a candidate."
+        type :string
         enum ["participations", "tickets"]
       end,
       "tickets": swagger_schema do
-        title "Vote container for Tickets"
+        title "Vote for tickets (requirements)"
         all_of [
           Schema.ref(:votes_container),
           Schema.new do
