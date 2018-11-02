@@ -5,13 +5,13 @@ defmodule ExVoteWeb.Api.UserController do
   alias ExVote.Accounts
 
   swagger_path :login do
-    summary "User login"
-    description "Authenticates a user"
+    summary "Login different types of users in the system"
+    description "Authenticate the user to allow to take part in participation projects. The available actions will depend on the the user type (user and candidate)."
     tag "Users"
     security []
     produces "application/json"
     parameters do
-      body :body, Schema.ref(:user_login), "User Login", required: true
+      body :body, Schema.ref(:user_login), "User login", required: true
     end
     response 200, "OK", Schema.ref(:token_container)
     response 400, "Login failed"
@@ -34,7 +34,7 @@ defmodule ExVoteWeb.Api.UserController do
 
   swagger_path :token_test do
     summary "Test authentication"
-    description "Tests the token present in the authorization header"
+    description "Used to tests the token in the authorization header. The token is needed to access API endpoints that need authorization."
     tag "Users"
     response 200, "OK"
     response 401, "Authentication required"
@@ -45,9 +45,9 @@ defmodule ExVoteWeb.Api.UserController do
   end
 
   swagger_path :register do
-    summary "Registers a user"
+    summary "Register a user"
     security []
-    description "Registers a new user in the ExVote application"
+    description "Add a new user in the ExVote application"
     produces "application/json"
     parameters do
       body :body, Schema.ref(:user_login), "New user", required: true
@@ -75,20 +75,21 @@ defmodule ExVoteWeb.Api.UserController do
     %{
       user_login: swagger_schema do
         title "UserLogin"
-        description "Informations to perform a login"
+        description "Information necessary to login a user"
         properties do
           name :string, "Username", required: true
         end
       end,
       token_container: swagger_schema do
         title "Token"
-        description "Contains the authentication token"
+        description "Authentication token needed to perform actions for which authorization is required"
         properties do
           token :string, "Token"
         end
       end,
       new_user: swagger_schema do
         title "User"
+        description "A user of the platform. Note that its role can be futher defined using the Current Participation APIs."
         properties do
           id :number, "User ID"
           name :string, "Username"
