@@ -10,7 +10,8 @@ defmodule ExVoteWeb.Api.ProjectController do
   plug :fetch_project
 
   swagger_path :index do
-    summary "Retrieve a list of all projects"
+    summary "Return the list of all participation projects"
+    description "The list includes projects in any phase, including the completed ones."
     tag "Projects"
     security []
     produces "application/json"
@@ -24,12 +25,13 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :report do
-    summary "Generate a report"
+    summary "Return a report for the status of a single participation project."
+    description "Return a report containing information on the status of an existing project. The project must exist. Other values will generate an exception"
     tag "Projects"
     security []
     produces "application/json"
     parameters do
-      project_id :path, :integer, "ID of project", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.ref(:report)
     response 404, "Not found"
@@ -49,15 +51,16 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :show do
-    summary "Retrieve a project"
+    summary "Return a single participation project"
+    description "The project must exist. Other values will generate an exception"
     tag "Projects"
     security []
     produces "application/json"
     parameters do
-      project_id :path, :integer, "ID of project to return", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.ref(:project)
-    response 404, "Not found"
+    response 404, "Project not found"
   end
 
 
@@ -77,12 +80,12 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :create do
-    summary "Create a project"
+    summary "Create a new participation project"
     tag "Projects"
     security []
     produces "application/json"
     parameters do
-      body :body, Schema.ref(:project), "The project", required: true
+      body :body, Schema.ref(:project), "Project ID", required: true
     end
     response 200, "OK", Schema.ref(:project)
     response 400, "Error"
@@ -103,11 +106,11 @@ defmodule ExVoteWeb.Api.ProjectController do
   end
 
   swagger_path :list_tickets do
-    summary "Retrieve a list of all tickets"
+    summary "Return a list of tickets (requirements) included in a participation project."
     tag "Projects"
     produces "application/json"
     parameters do
-      project_id :path, :integer, "Project id", required: true
+      project_id :path, :integer, "Project ID", required: true
     end
     response 200, "OK", Schema.ref(:ticket_list)
     response 400, "Error"
@@ -132,92 +135,115 @@ defmodule ExVoteWeb.Api.ProjectController do
         properties do
           id :number, "Project id (readonly)"
           title :string, "Project title", required: true
-          phase_candidates :string, "Begin of the candidate phase", required: true, format: "date-time"
-          phase_end :string, "End of the projects lifetime", required: true, format: "date-time"
+          phase_candidates :string, "Time when the voting for candidates in this participation project should start", required: true, format: "date-time"
+          phase_end :string, "Time when the participation project should end", required: true, format: "date-time"
           tickets Schema.ref(:ticket_list)
         end
       end,
       short_project: swagger_schema do
         title "Short project"
-        description "A short overview of a project"
+        description "A short overview of a participation project"
         properties do
           id :number, "Project id (readonly)"
           title :string, "Project title", required: true
-          current_phase ref(:phase), "Current Phase", required: true
+          current_phase ref(:phase), "Current phase", required: true
         end
       end,
       project_list: swagger_schema do
         title "Project list"
-        description "A collection of projects"
+        description "The list of participation projects in short format"
         type :array
         items Schema.ref(:short_project)
       end,
       ticket: swagger_schema do
         title "Ticket"
-        description "A single ticket"
+        description "A single ticket (requirement) imported from an external system"
         properties do
-          id :number, "Ticket id (readonly)"
-          external_id :number, "ID on external system"
-          title :string, "Ticket title", required: true
-          description :string, "Description"
-          url :string, "URL to the bugtracker", format: "url"
+          id :number, "Ticket ID (readonly)"
+          external_id :number, "Ticket ID on the external system"
+          title :string, "Ticket (requirement) title", required: true
+          description :string, "Description of the Ticket (requirement) content"
+          url :string, "URL representing the source of the ticket (requirement)", format: "url"
         end
       end,
       ticket_list: swagger_schema do
-        title "Tickets"
-        description "A collection of tickets"
+        title "Tickets (requirements)"
+        description "A list of tickets (requirements) imported from an external system"
         type :array
         items Schema.ref(:ticket)
       end,
       phase: swagger_schema do
         type :string
         title "Phase"
+        description """
+        A phase during a participation project.
+
+        - In a User phase, normal users vote for candidates,
+        - In a Candidate phase, elected candidates vote for Tickets (requirements),
+        - The End phase concludes the voting process.
+        """
         enum ["phase_users", "phase_candidates", "phase_end"]
       end,
       report: swagger_schema do
         title "Report"
+        description """
+        A report describing a participation project in terms of:
+        - Votes,
+        - Schedule, 
+        - Users and Candidates participantion
+        """
         properties do
           schedule (Schema.new do
+                     title "Schedule"
+                     description "Relevant times for the scheduling of a participation project" 
                      properties do
-                       current_phase ref(:phase), "Current Phase"
-                       phase_candidates_at :string, "The begin of the second phase", format: "date-time"
-                       phase_start :string, "The begin of the project lifetime", format: "date-time"
-                       project_end :string, "The end date of the project", format: "date-time"
+                       current_phase ref(:phase), "The current phase of a participation project"
+                       phase_candidates_at :string, "The time when the elected candidates start voting", format: "date-time"
+                       phase_start :string, "The time when the participation project starts", format: "date-time"
+                       project_end :string, "The time when the participation project ends", format: "date-time"
                      end
           end)
           participations (Schema.new do
+                           title "Participations"
+                           description "Information regarding users and candidates participation in a project"
                            properties do
-                             users :number, "The amount of users participating"
-                             candidates :number, "The amount of canidates participating"
-                             users_voted :number, "The amount of users that have voted"
-                             candidates_voted :number, "The amount of candidates that have voted"
+                             users :number, "The total number of participating users"
+                             candidates :number, "The number of participating candidates"
+                             users_voted :number, "The number of users who have voted for a candidate"
+                             candidates_voted :number, "The number of candidates who have voted for a Ticket (requirements)"
                            end
           end)
           votes (Schema.new do
+                  title "Votes"
+                  description "Summary results of the voting process"
                   properties do
-                    candidates Schema.array(:report_votes_candidates), "All candidates ordered by votes received"
-                    tickets Schema.array(:report_votes_tickets), "All tickets ordered by votes received"
+                    candidates Schema.array(:report_votes_candidates), "List of candidates ranked by the total number of votes received"
+                    tickets Schema.array(:report_votes_tickets), "List of tickets (requirements) ordered by the total number of votes received"
                   end
           end)
         end
       end,
       report_votes_candidates: swagger_schema do
+        title "Candidate votes report"
+        description "Total number of votes received by a candidate"
         properties do
           candidate ref(:report_user), "The candidate"
-          votes_received :number, "The amount of votes received"
+          votes_received :number, "The number of votes received by the candidate"
         end
       end,
       report_user: swagger_schema do
+        title "Generic representation of a user"
         properties do
           id :number, "User ID"
           name :string, "Username"
         end
       end,
       report_votes_tickets: swagger_schema do
+        title "Ticket votes report"
         properties do
-          ticket ref(:ticket), "The ticket"
-          votes_received :number, "The amount of votes received"
-          voted_by Schema.array(:number), "Array of user id of candidates who voted for this ticket"
+          ticket ref(:ticket), "The Ticket (requirement)"
+          votes_received :number, "The number of votes received by the Ticket"
+          voted_by Schema.array(:number), "List of candidates id who voted for the ticket"
         end
       end
     }

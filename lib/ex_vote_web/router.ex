@@ -89,35 +89,33 @@ defmodule ExVoteWeb.Router do
         %{
           name: "Projects",
           description: """
-          A project contains all informations belonging to the lifecycle of a participation project. This resource is also the base of all participation endpoints.
+          Project contains information about the lifecycle of a participation project. This resource is the base for all participation endpoints.
 
-          For further informations regarding participations see [Project Participations](#tag/Project-Participations) and [Current Participation](#tag/Current-Participation).
+          For further informations regarding participations see Participations.
           """
         },
         %{
           name: "Users",
-          description: "Mainly for login purposes"
+          description: "Users are participants in a project. They can vote for candidates, whereas candidates can vote directly for Tickets (requirements)"
         },
         %{
           name: "Project Participations",
           description: """
-          A Project Participation is a participation belonging to a certain project. A Participation is unique per user and project and is the main primitive in the voting process.
+          Participation represents the voting process. A Participation is an unique relationship between a user (including candidates) and a project.
 
-          For the users participation in the selected project see [Current Participation](#tag/Current-Participation).
+          For the users currently participating in the a project see Current Participation.
           """
         },
         %{
           name: "Current Participation",
           description: """
-          The Current Participation describes the unique participation of the authenticated user in the selected project.
+          Current Participation describes the participation of an authenticated user (including candidates) in a project.
 
-          A Participation may be one of two different types, which influences the indiviual voting process:
+          The Participation changes according to the current phase of the project.
 
-          - user:
-          Votes on a single candidate during the first project phase.
+          - Users vote for a single candidate during the User phase of the project.
 
-          - candidate:
-          Votes on none or multiple tickets during the second project phase.
+          - Candidate vote for none, one, or several tickets (requirements) during the candidate phase of the project.
 
           """
         }
@@ -127,7 +125,7 @@ defmodule ExVoteWeb.Router do
           type: "apiKey",
           name: "Authorization",
           in: "header",
-          description: "Token for Api operations"
+          description: "Token for API operations"
         }
       },
       security: [

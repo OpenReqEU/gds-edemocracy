@@ -2,19 +2,19 @@
   "tags": [
     {
       "name": "Projects",
-      "description": "A project contains all informations belonging to the lifecycle of a participation project. This resource is also the base of all participation endpoints.\n\nFor further informations regarding participations see [Project Participations](#tag/Project-Participations) and [Current Participation](#tag/Current-Participation).\n"
+      "description": "Project contains information about the lifecycle of a participation project. This resource is the base for all participation endpoints.\n\nFor further informations regarding participations see Participations.\n"
     },
     {
       "name": "Users",
-      "description": "Mainly for login purposes"
+      "description": "Users are participants in a project. They can vote for candidates, whereas candidates can vote directly for Tickets (requirements)"
     },
     {
       "name": "Project Participations",
-      "description": "A Project Participation is a participation belonging to a certain project. A Participation is unique per user and project and is the main primitive in the voting process.\n\nFor the users participation in the selected project see [Current Participation](#tag/Current-Participation).\n"
+      "description": "Participation represents the voting process. A Participation is an unique relationship between a user (including candidates) and a project.\n\nFor the users currently participating in the a project see Current Participation.\n"
     },
     {
       "name": "Current Participation",
-      "description": "The Current Participation describes the unique participation of the authenticated user in the selected project.\n\nA Participation may be one of two different types, which influences the indiviual voting process:\n\n- user:\nVotes on a single candidate during the first project phase.\n\n- candidate:\nVotes on none or multiple tickets during the second project phase.\n\n"
+      "description": "Current Participation describes the participation of an authenticated user (including candidates) in a project.\n\nThe Participation changes according to the current phase of the project.\n\n- Users vote for a single candidate during the User phase of the project.\n\n- Candidate vote for none, one, or several tickets (requirements) during the candidate phase of the project.\n\n"
     }
   ],
   "swagger": "2.0",
@@ -23,7 +23,7 @@
       "type": "apiKey",
       "name": "Authorization",
       "in": "header",
-      "description": "Token for Api operations"
+      "description": "Token for API operations"
     }
   },
   "security": [
@@ -128,7 +128,7 @@
         "tags": [
           "Projects"
         ],
-        "summary": "Retrieve a list of all tickets",
+        "summary": "Return a list of tickets (requirements) included in a participation project.",
         "responses": {
           "400": {
             "description": "Error"
@@ -149,7 +149,7 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectController.list_tickets",
@@ -161,7 +161,7 @@
         "tags": [
           "Projects"
         ],
-        "summary": "Generate a report",
+        "summary": "Return a report for the status of a single participation project.",
         "security": [],
         "responses": {
           "404": {
@@ -183,11 +183,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "ID of project"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectController.report",
-        "description": ""
+        "description": "Return a report containing information on the status of an existing project. The project must exist. Other values will generate an exception"
       }
     },
     "/api/projects/{project_id}/participations/users": {
@@ -195,7 +195,7 @@
         "tags": [
           "Project Participations"
         ],
-        "summary": "Retrieve a list of all participating users",
+        "summary": "Return a list of all participating users",
         "responses": {
           "400": {
             "description": "Error"
@@ -219,11 +219,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.list_users",
-        "description": ""
+        "description": "For an ongoing existing project, the list includes users participating in the project"
       }
     },
     "/api/projects/{project_id}/participations/current/votes": {
@@ -231,7 +231,7 @@
         "tags": [
           "Current Participation"
         ],
-        "summary": "Update the current participations votes",
+        "summary": "Update the vote of the logged-in user for an ongoing participation project",
         "responses": {},
         "produces": [
           "application/json"
@@ -242,7 +242,7 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           },
           {
             "schema": {
@@ -255,13 +255,13 @@
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.update_votes",
-        "description": "The id of each vote references different entities, based on the participation type.\n\n- user: References a candidate in the project by user_id (limited to exactly one element)\n\n- candidate: References a ticket in the project by ticket_id\n"
+        "description": "For an existing ongoing project, the vote of the logged-in user is updated based on its current role. \n\nIf participating as a user, the vote should contain exactly one element referencing the user_id of a candidate in the project (limited to exactly one element)\n\nIf participating as a candidate, the vote can contain several elements referencing the selected ticket_ids\n"
       },
       "get": {
         "tags": [
           "Current Participation"
         ],
-        "summary": "Retrieve a list of the current participations votes",
+        "summary": "Return the votes of the user currently logged in for a project",
         "responses": {
           "404": {
             "description": "User has no participation"
@@ -282,11 +282,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.list_votes",
-        "description": "The kind of votes are dependent on the participation role, hence the votes are contained in a variable schema, selected by the \"type\" field.\nSee [Composition and Inheritance](https://swagger.io/specification/v2/).\n"
+        "description": "For an existing project, the votes depend on the role the user has when voting, either for a candidate or a ticket (requirement). This information is reported in the \"type\" field.  \n"
       }
     },
     "/api/projects/{project_id}/participations/current": {
@@ -294,7 +294,7 @@
         "tags": [
           "Current Participation"
         ],
-        "summary": "Create or alter the current participation",
+        "summary": "Updates the logged-in user participation in a project",
         "responses": {
           "200": {
             "schema": {
@@ -312,7 +312,7 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           },
           {
             "schema": {
@@ -325,13 +325,13 @@
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.update_current_participation",
-        "description": ""
+        "description": "For an existing ongoing project, allow the user to change its role. Authorization required. If updating a user to a candidate, a candidate_summary field should be passed in the body. If the participation does not exists, it will be created."
       },
       "post": {
         "tags": [
           "Current Participation"
         ],
-        "summary": "Create the current participation",
+        "summary": "Create the participation of the logged-in user in the project",
         "responses": {
           "400": {
             "description": "Participation already exists"
@@ -352,7 +352,7 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           },
           {
             "schema": {
@@ -365,13 +365,13 @@
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.create_current_participation",
-        "description": "Mental model: Joining a project"
+        "description": "For an ongoing existing project, creates a participation allowing the user currently logged-in to join the project. Authorization required."
       },
       "get": {
         "tags": [
           "Current Participation"
         ],
-        "summary": "Retrieve the current participation",
+        "summary": "Retrieve the participation of the logged-in user in a project",
         "responses": {
           "404": {
             "description": "User has no participation"
@@ -392,11 +392,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.show_current_participation",
-        "description": ""
+        "description": "For an ongoing existing project, return the participation role of the current user (either user or candidate). Authorization is necessary."
       }
     },
     "/api/projects/{project_id}/participations/candidates": {
@@ -404,7 +404,7 @@
         "tags": [
           "Project Participations"
         ],
-        "summary": "Retrieve a list of all participating candidates",
+        "summary": "Return a list of all participating candidates",
         "responses": {
           "400": {
             "description": "Error"
@@ -428,11 +428,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.list_candidates",
-        "description": ""
+        "description": "For an ongoing existing project, the list includes candidates participating in the project"
       }
     },
     "/api/projects/{project_id}/participations": {
@@ -461,11 +461,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "Project id"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.list_participations",
-        "description": ""
+        "description": "For an ongoing existing project, the list includes all participants (users and candidates)"
       }
     },
     "/api/projects/{project_id}": {
@@ -473,11 +473,11 @@
         "tags": [
           "Projects"
         ],
-        "summary": "Retrieve a project",
+        "summary": "Return a single participation project",
         "security": [],
         "responses": {
           "404": {
-            "description": "Not found"
+            "description": "Project not found"
           },
           "200": {
             "schema": {
@@ -495,11 +495,11 @@
             "required": true,
             "name": "project_id",
             "in": "path",
-            "description": "ID of project to return"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectController.show",
-        "description": ""
+        "description": "The project must exist. Other values will generate an exception"
       }
     },
     "/api/projects": {
@@ -507,7 +507,7 @@
         "tags": [
           "Projects"
         ],
-        "summary": "Create a project",
+        "summary": "Create a new participation project",
         "security": [],
         "responses": {
           "400": {
@@ -531,7 +531,7 @@
             "required": true,
             "name": "body",
             "in": "body",
-            "description": "The project"
+            "description": "Project ID"
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectController.create",
@@ -541,7 +541,7 @@
         "tags": [
           "Projects"
         ],
-        "summary": "Retrieve a list of all projects",
+        "summary": "Return the list of all participation projects",
         "security": [],
         "responses": {
           "200": {
@@ -556,7 +556,7 @@
         ],
         "parameters": [],
         "operationId": "ExVoteWeb.Api.ProjectController.index",
-        "description": ""
+        "description": "The list includes projects in any phase, including the completed ones."
       }
     }
   },
@@ -571,7 +571,8 @@
       "enum": [
         "participations",
         "tickets"
-      ]
+      ],
+      "description": "The type depends on whether the vote was casted by a user or a candidate."
     },
     "votes_container": {
       "type": "object",
@@ -585,7 +586,8 @@
           "$ref": "#/definitions/votes_type"
         }
       },
-      "discriminator": "type"
+      "discriminator": "type",
+      "description": "Votes in a participation project."
     },
     "votes": {
       "type": "object",
@@ -617,7 +619,7 @@
     "user": {
       "type": "object",
       "title": "user",
-      "description": "user",
+      "description": "Participation for a user",
       "allOf": [
         {
           "$ref": "#/definitions/participation"
@@ -637,7 +639,7 @@
     },
     "tickets": {
       "type": "object",
-      "title": "Vote container for Tickets",
+      "title": "Vote for tickets (requirements)",
       "allOf": [
         {
           "$ref": "#/definitions/votes_container"
@@ -655,11 +657,11 @@
     },
     "ticket_list": {
       "type": "array",
-      "title": "Tickets",
+      "title": "Tickets (requirements)",
       "items": {
         "$ref": "#/definitions/ticket"
       },
-      "description": "A collection of tickets"
+      "description": "A list of tickets (requirements) imported from an external system"
     },
     "ticket": {
       "type": "object",
@@ -671,26 +673,26 @@
         "url": {
           "type": "string",
           "format": "url",
-          "description": "URL to the bugtracker"
+          "description": "URL representing the source of the ticket (requirement)"
         },
         "title": {
           "type": "string",
-          "description": "Ticket title"
+          "description": "Ticket (requirement) title"
         },
         "id": {
           "type": "number",
-          "description": "Ticket id (readonly)"
+          "description": "Ticket ID (readonly)"
         },
         "external_id": {
           "type": "number",
-          "description": "ID on external system"
+          "description": "Ticket ID on the external system"
         },
         "description": {
           "type": "string",
-          "description": "Description"
+          "description": "Description of the Ticket (requirement) content"
         }
       },
-      "description": "A single ticket"
+      "description": "A single ticket (requirement) imported from an external system"
     },
     "short_project": {
       "type": "object",
@@ -709,11 +711,11 @@
           "description": "Project id (readonly)"
         },
         "current_phase": {
-          "description": "Current Phase",
+          "description": "Current phase",
           "$ref": "#/definitions/phase"
         }
       },
-      "description": "A short overview of a project"
+      "description": "A short overview of a participation project"
     },
     "role": {
       "type": "string",
@@ -721,43 +723,48 @@
       "enum": [
         "user",
         "candidate"
-      ]
+      ],
+      "description": "The role of a participant in a project. Users vote for candidates. Candidates vote for tickets (requirements)."
     },
     "report_votes_tickets": {
       "type": "object",
+      "title": "Ticket votes report",
       "properties": {
         "votes_received": {
           "type": "number",
-          "description": "The amount of votes received"
+          "description": "The number of votes received by the Ticket"
         },
         "voted_by": {
           "type": "array",
           "items": {
             "type": "number"
           },
-          "description": "Array of user id of candidates who voted for this ticket"
+          "description": "List of candidates id who voted for the ticket"
         },
         "ticket": {
-          "description": "The ticket",
+          "description": "The Ticket (requirement)",
           "$ref": "#/definitions/ticket"
         }
       }
     },
     "report_votes_candidates": {
       "type": "object",
+      "title": "Candidate votes report",
       "properties": {
         "votes_received": {
           "type": "number",
-          "description": "The amount of votes received"
+          "description": "The number of votes received by the candidate"
         },
         "candidate": {
           "description": "The candidate",
           "$ref": "#/definitions/report_user"
         }
-      }
+      },
+      "description": "Total number of votes received by a candidate"
     },
     "report_user": {
       "type": "object",
+      "title": "Generic representation of a user",
       "properties": {
         "name": {
           "type": "string",
@@ -775,69 +782,76 @@
       "properties": {
         "votes": {
           "type": "object",
+          "title": "Votes",
           "properties": {
             "tickets": {
               "type": "array",
               "items": {
                 "$ref": "#/definitions/report_votes_tickets"
               },
-              "description": "All tickets ordered by votes received"
+              "description": "List of tickets (requirements) ordered by the total number of votes received"
             },
             "candidates": {
               "type": "array",
               "items": {
                 "$ref": "#/definitions/report_votes_candidates"
               },
-              "description": "All candidates ordered by votes received"
+              "description": "List of candidates ranked by the total number of votes received"
             }
-          }
+          },
+          "description": "Summary results of the voting process"
         },
         "schedule": {
           "type": "object",
+          "title": "Schedule",
           "properties": {
             "project_end": {
               "type": "string",
               "format": "date-time",
-              "description": "The end date of the project"
+              "description": "The time when the participation project ends"
             },
             "phase_start": {
               "type": "string",
               "format": "date-time",
-              "description": "The begin of the project lifetime"
+              "description": "The time when the participation project starts"
             },
             "phase_candidates_at": {
               "type": "string",
               "format": "date-time",
-              "description": "The begin of the second phase"
+              "description": "The time when the elected candidates start voting"
             },
             "current_phase": {
-              "description": "Current Phase",
+              "description": "The current phase of a participation project",
               "$ref": "#/definitions/phase"
             }
-          }
+          },
+          "description": "Relevant times for the scheduling of a participation project"
         },
         "participations": {
           "type": "object",
+          "title": "Participations",
           "properties": {
             "users_voted": {
               "type": "number",
-              "description": "The amount of users that have voted"
+              "description": "The number of users who have voted for a candidate"
             },
             "users": {
               "type": "number",
-              "description": "The amount of users participating"
+              "description": "The total number of participating users"
             },
             "candidates_voted": {
               "type": "number",
-              "description": "The amount of candidates that have voted"
+              "description": "The number of candidates who have voted for a Ticket (requirements)"
             },
             "candidates": {
               "type": "number",
-              "description": "The amount of canidates participating"
+              "description": "The number of participating candidates"
             }
-          }
+          },
+          "description": "Information regarding users and candidates participation in a project"
         }
-      }
+      },
+      "description": "A report describing a participation project in terms of:\n- Votes,\n- Schedule, \n- Users and Candidates participantion\n"
     },
     "project_list": {
       "type": "array",
@@ -845,7 +859,7 @@
       "items": {
         "$ref": "#/definitions/short_project"
       },
-      "description": "A collection of projects"
+      "description": "The list of participation projects in short format"
     },
     "project": {
       "type": "object",
@@ -866,12 +880,12 @@
         "phase_end": {
           "type": "string",
           "format": "date-time",
-          "description": "End of the projects lifetime"
+          "description": "Time when the participation project should end"
         },
         "phase_candidates": {
           "type": "string",
           "format": "date-time",
-          "description": "Begin of the candidate phase"
+          "description": "Time when the voting for candidates in this participation project should start"
         },
         "id": {
           "type": "number",
@@ -887,7 +901,8 @@
         "phase_users",
         "phase_candidates",
         "phase_end"
-      ]
+      ],
+      "description": "A phase during a participation project.\n\n- In a User phase, normal users vote for candidates,\n- In a Candidate phase, elected candidates vote for Tickets (requirements),\n- The End phase concludes the voting process.\n"
     },
     "participations": {
       "type": "object",
@@ -913,7 +928,7 @@
       "items": {
         "$ref": "#/definitions/participation"
       },
-      "description": "A collection of participations"
+      "description": "A collection of users and candidates participating to a project"
     },
     "participation": {
       "type": "object",
@@ -925,7 +940,7 @@
       "properties": {
         "user_id": {
           "type": "number",
-          "description": "User id (readonly)"
+          "description": "User ID (readonly)"
         },
         "role": {
           "description": "Role",
@@ -933,11 +948,11 @@
         },
         "project_id": {
           "type": "number",
-          "description": "Project id (readonly)"
+          "description": "Project ID (readonly)"
         }
       },
       "discriminator": "role",
-      "description": "Represents a participation in a project"
+      "description": "Represents the user participation in a project depending on its role"
     },
     "new_user": {
       "type": "object",
@@ -956,7 +971,7 @@
     "candidate": {
       "type": "object",
       "title": "candidate",
-      "description": "Candidate",
+      "description": "Participation for a candidate",
       "allOf": [
         {
           "$ref": "#/definitions/participation"
@@ -969,7 +984,7 @@
           "properties": {
             "candidate_summary": {
               "type": "string",
-              "description": "Summary text (only relevant for role: candidate)"
+              "description": "Candidate statement on its participation in the project (only relevant for role: candidate)"
             }
           }
         }
