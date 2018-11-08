@@ -4,7 +4,7 @@ defmodule ExVote.Projects.OpenreqFetcher do
   require Logger
   import NaiveDateTime
 
-  @url "http://openreq.ist.tugraz.at/api/v1/project/3NjfP3cf/unassigned"
+  @url "http://217.172.12.199:9001/api/v1/project/3NjfP3cf/unassigned"
 
   def start_link(_) do
     Task.start_link(__MODULE__, :run, [])
