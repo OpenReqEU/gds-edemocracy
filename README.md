@@ -1,4 +1,4 @@
-# LiqOR - Liquid Democracy for OpenReq
+# LiqOR - Liquid democracy for OpenReq
 
 **This is an early prototype!**
 
