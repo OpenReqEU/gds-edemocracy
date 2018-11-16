@@ -1,4 +1,4 @@
-# ExVote
+# LiqOR - Liquid Democracy for OpenReq
 
 **This is an early prototype!**
 
