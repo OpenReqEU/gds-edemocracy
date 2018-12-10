@@ -55,3 +55,5 @@ There are three special accounts, which always get created:
   * Username: "candidate"
 
     See above only with the role "candidate"
+
+## Licensing
