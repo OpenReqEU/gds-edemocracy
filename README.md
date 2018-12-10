@@ -1,4 +1,4 @@
-# ExVote
+# LiqOR - Liquid democracy for OpenReq
 
 **This is an early prototype!**
 
@@ -54,4 +54,4 @@ There are three special accounts, which always get created:
     This accounts has a participation of role "user" in every project.
   * Username: "candidate"
 
-    See above only with the role "candidate"
+    See above only with the role "candidate."
