@@ -1,6 +1,6 @@
 
-**This is an early prototype!**
-Working name _LiqOR_—Liquid Democracy for OpenReq
+**This is an early prototype!**  
+Working name _LiqOR_—Liquid Democracy for OpenReq.
 
 ## Installation
 
