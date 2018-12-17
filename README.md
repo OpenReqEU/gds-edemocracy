@@ -1,7 +1,6 @@
 # LiqOR - Liquid democracy for OpenReq
 
-**This is an early prototype!**
-
+**This is an early prototype, use at your own risk**
 ## Installation
 
 Prerequisites:
