@@ -1,5 +1,5 @@
 
-**This is an early prototype, use at your own risk**
+**This is an early prototype**
 
 ## Installation
 
