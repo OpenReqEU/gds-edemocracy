@@ -48,7 +48,7 @@
         },
         "parameters": [],
         "operationId": "ExVoteWeb.Api.UserController.token_test",
-        "description": "Tests the token present in the authorization header"
+        "description": "Used to tests the token in the authorization header. The token is needed to access API endpoints that need authorization."
       }
     },
     "/api/users/register": {
@@ -56,7 +56,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "Registers a user",
+        "summary": "Register a user",
         "security": [],
         "responses": {
           "400": {
@@ -84,7 +84,7 @@
           }
         ],
         "operationId": "ExVoteWeb.Api.UserController.register",
-        "description": "Registers a new user in the ExVote application"
+        "description": "Add a new user in the ExVote application"
       }
     },
     "/api/users/login": {
@@ -92,7 +92,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "User login",
+        "summary": "Login different types of users in the system",
         "security": [],
         "responses": {
           "400": {
@@ -116,11 +116,11 @@
             "required": true,
             "name": "body",
             "in": "body",
-            "description": "User Login"
+            "description": "User login"
           }
         ],
         "operationId": "ExVoteWeb.Api.UserController.login",
-        "description": "Authenticates a user"
+        "description": "Authenticate the user to allow to take part in participation projects. The available actions will depend on the the user type (user and candidate)."
       }
     },
     "/api/projects/{project_id}/tickets": {
@@ -614,7 +614,7 @@
           "description": "Username"
         }
       },
-      "description": "Informations to perform a login"
+      "description": "Information necessary to login a user"
     },
     "user": {
       "type": "object",
@@ -635,7 +635,7 @@
           "description": "Token"
         }
       },
-      "description": "Contains the authentication token"
+      "description": "Authentication token needed to perform actions for which authorization is required"
     },
     "tickets": {
       "type": "object",
@@ -966,7 +966,8 @@
           "type": "number",
           "description": "User ID"
         }
-      }
+      },
+      "description": "A user of the platform. Note that its role can be futher defined using the Current Participation APIs."
     },
     "candidate": {
       "type": "object",
