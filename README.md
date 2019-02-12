@@ -80,7 +80,7 @@ Requirements Engineering for Sustainability workshop at Requirements Engineering
 ## How to contribute
 
 See OpenReq project contribution 
-[Contribution Guidelines](https://github.com/OpenReqEU/OpenReq/blob/master/CONTRIBUTING.md)
+[Contribution Guidelines](https://github.com/OpenReqEU/OpenReq/blob/master/CONTRIBUTING.md).
 
 
 ## License
