@@ -9,6 +9,7 @@ defmodule ExVoteWeb.Api.ProjectView do
 
   def render("show.json", %{:project => project}) do
     %{
+      id: project.id,
       title: project.title,
       phase_candidates_at: project.phase_candidates,
       phase_end_at: project.phase_end,
