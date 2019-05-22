@@ -189,13 +189,13 @@ defmodule ExVoteWeb.Api.ProjectController do
         description """
         A report describing a participation project in terms of:
         - Votes,
-        - Schedule, 
+        - Schedule,
         - Users and Candidates participantion
         """
         properties do
           schedule (Schema.new do
                      title "Schedule"
-                     description "Relevant times for the scheduling of a participation project" 
+                     description "Relevant times for the scheduling of a participation project"
                      properties do
                        current_phase ref(:phase), "The current phase of a participation project"
                        phase_candidates_at :string, "The time when the elected candidates start voting", format: "date-time"
