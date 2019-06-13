@@ -10,7 +10,8 @@ defmodule ExVote.Mixfile do
       compilers: [:phoenix, :gettext, :phoenix_swagger] ++ Mix.compilers,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: CoberturaCover]
     ]
   end
 
@@ -43,7 +44,8 @@ defmodule ExVote.Mixfile do
       {:cowboy, "~> 1.0"},
       {:timex, "~> 3.1"},
       {:phoenix_swagger, "~> 0.8"},
-      {:httpoison, "~> 1.0"}
+      {:httpoison, "~> 1.0"},
+      {:cobertura_cover, "~> 0.9.0", only: :test}
     ]
   end
 

@@ -851,7 +851,7 @@
           "description": "Information regarding users and candidates participation in a project"
         }
       },
-      "description": "A report describing a participation project in terms of:\n- Votes,\n- Schedule, \n- Users and Candidates participantion\n"
+      "description": "A report describing a participation project in terms of:\n- Votes,\n- Schedule,\n- Users and Candidates participantion\n"
     },
     "project_list": {
       "type": "array",
