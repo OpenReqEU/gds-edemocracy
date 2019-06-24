@@ -13,6 +13,7 @@ defmodule ExVoteWeb.Router do
   end
 
   pipeline :api do
+    plug CORSPlug, origin: "*", methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"]
     plug :accepts, ["json"]
   end
 

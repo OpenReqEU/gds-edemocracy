@@ -45,6 +45,7 @@ defmodule ExVote.Mixfile do
       {:timex, "~> 3.1"},
       {:phoenix_swagger, "~> 0.8"},
       {:httpoison, "~> 1.0"},
+      {:cors_plug, "~> 1.5"},
       {:cobertura_cover, "~> 0.9.0", only: :test}
     ]
   end
