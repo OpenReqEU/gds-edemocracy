@@ -21,6 +21,8 @@ defmodule ExVoteWeb.Endpoint do
 
   plug Plug.Logger
 
+  plug CORSPlug
+
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
