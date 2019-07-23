@@ -3,9 +3,10 @@ defmodule ExVoteWeb.Api.UserView do
 
   def render("error.json", %{:changeset => changeset}), do: render_changeset_errors(changeset)
 
-  def render("success.json", %{:token => token}) do
+  def render("success.json", %{:login => login}) do
     %{
-      token: token
+      token: login.token,
+      id: login.id
     }
   end
 
