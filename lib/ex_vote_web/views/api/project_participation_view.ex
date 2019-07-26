@@ -37,6 +37,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationView do
     %{
       project_id: participation.project_id,
       user_id: participation.user_id,
+      name: participation.user.name,
       role: participation.role,
       candidate_summary: participation.candidate_summary
     }
