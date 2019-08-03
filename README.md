@@ -65,7 +65,7 @@ There are three special accounts:
 ## Note for developers
 1. Clone and cd into the repository
 2. Make sure PostgreSQL is running
-3. `mix get.deps` to download the dependencies
+3. `mix deps.get` to download the dependencies
 4. Modify `priv/repo/seed.exs` to change the database seeds (if necessary)
 5. `mix ecto.create && mix ecto.migrate` to seed the database
 6. `mix phx.server` to start the app
