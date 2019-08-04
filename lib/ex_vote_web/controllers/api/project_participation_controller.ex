@@ -156,7 +156,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   swagger_path :list_votes do
     summary "Return the votes of the user currently logged in for a project"
     description """
-    For an existing project, the votes depend on the role the user has when voting, either for a candidate or a ticket (requirement). This information is reported in the "type" field.  
+    For an existing project, the votes depend on the role the user has when voting, either for a candidate or a ticket (requirement). This information is reported in the "type" field.
     """
     tag "Current Participation"
     produces "application/json"
@@ -184,7 +184,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
   swagger_path :update_votes do
     summary "Update the vote of the logged-in user for an ongoing participation project"
     description """
-    For an existing ongoing project, the vote of the logged-in user is updated based on its current role. 
+    For an existing ongoing project, the vote of the logged-in user is updated based on its current role.
 
     If participating as a user, the vote should contain exactly one element referencing the user_id of a candidate in the project (limited to exactly one element)
 
@@ -198,6 +198,7 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     end
   end
   def update_votes(conn, params) do
+    params = Map.put(params, "user_id", conn.assigns.user.id)
     with participation when not is_nil(participation) <- conn.assigns[:participation],
          {:ok, votes} <- Participations.update_votes(participation, params) do
       conn
