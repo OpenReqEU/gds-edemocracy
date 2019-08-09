@@ -198,7 +198,6 @@ defmodule ExVoteWeb.Api.ProjectParticipationController do
     end
   end
   def update_votes(conn, params) do
-    params = Map.put(params, "user_id", conn.assigns.user.id)
     with participation when not is_nil(participation) <- conn.assigns[:participation],
          {:ok, votes} <- Participations.update_votes(participation, params) do
       conn

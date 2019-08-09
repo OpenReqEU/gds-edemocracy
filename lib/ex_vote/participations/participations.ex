@@ -102,7 +102,6 @@ defmodule ExVote.Participations do
   def update_votes(%CandidateParticipation{} = participation, attrs) do
     data = %{}
     types = %{votes: {:array, :integer}}
-    user_id = Map.get(attrs, "user_id")
     votes_changeset = {data, types}
 
     |> Ecto.Changeset.cast(attrs, [:votes])
@@ -118,7 +117,7 @@ defmodule ExVote.Participations do
         diff = List.myers_difference(current_vote_ids, vote_ids)
         with delete_ids <- Keyword.get(diff, :del, []),
              create_ids <- Keyword.get(diff, :ins, []),
-             _ <- delete_participation_tickets(delete_ids, user_id),
+             _ <- delete_participation_tickets(delete_ids, participation.id),
              {:ok, _transaction_result} <- create_participation_tickets(create_ids, participation.id) do
           {:ok, get_votes(participation)}
         else
@@ -129,14 +128,12 @@ defmodule ExVote.Participations do
     end
   end
 
-  defp delete_participation_tickets(ticket_ids, user_id) do
-    query = from pt in ParticipationTicket,
-      join: p in Participation,
-      where: p.id == pt.participation_id
+  defp delete_participation_tickets(ticket_ids, participation_id) do
+      query = from pt in ParticipationTicket,
+        where: pt.participation_id == ^participation_id,
+        where: pt.ticket_id in ^ticket_ids
 
-    query = from [pt, p] in query, where: p.user_id == ^user_id,
-      where: pt.ticket_id in ^ticket_ids
-    Repo.delete_all(query)
+      Repo.delete_all(query)
   end
 
   defp create_participation_tickets(ticket_ids, participation_id) do

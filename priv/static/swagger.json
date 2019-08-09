@@ -255,7 +255,7 @@
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.update_votes",
-        "description": "For an existing ongoing project, the vote of the logged-in user is updated based on its current role. \n\nIf participating as a user, the vote should contain exactly one element referencing the user_id of a candidate in the project (limited to exactly one element)\n\nIf participating as a candidate, the vote can contain several elements referencing the selected ticket_ids\n"
+        "description": "For an existing ongoing project, the vote of the logged-in user is updated based on its current role.\n\nIf participating as a user, the vote should contain exactly one element referencing the user_id of a candidate in the project (limited to exactly one element)\n\nIf participating as a candidate, the vote can contain several elements referencing the selected ticket_ids\n"
       },
       "get": {
         "tags": [
@@ -286,7 +286,7 @@
           }
         ],
         "operationId": "ExVoteWeb.Api.ProjectParticipationController.list_votes",
-        "description": "For an existing project, the votes depend on the role the user has when voting, either for a candidate or a ticket (requirement). This information is reported in the \"type\" field.  \n"
+        "description": "For an existing project, the votes depend on the role the user has when voting, either for a candidate or a ticket (requirement). This information is reported in the \"type\" field.\n"
       }
     },
     "/api/projects/{project_id}/participations/current": {
